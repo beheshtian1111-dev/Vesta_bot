@@ -71,53 +71,37 @@ def send_photos(chat_id, file_ids, caption, product_name):
 
 
 # ===== استعلام موجودی با register_next_step_handler =====
-def cancel_markup():
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("❌ انصراف از استعلام")
-    return markup
-
-
 @bot.callback_query_handler(func=lambda call: call.data.startswith("inquiry_"))
 def handle_inquiry(call):
     product = call.data.replace("inquiry_", "")
     bot.answer_callback_query(call.id)
     msg = bot.send_message(
         call.message.chat.id,
-        f"📋 *استعلام موجودی {product}*\n\nچه رنگی مد نظر داری؟\n\nبرای انصراف بنویس: انصراف",
-        parse_mode="Markdown",
-        reply_markup=cancel_markup()
+        f"📋 *استعلام موجودی — {product}*\n\n"
+        f"لطفاً اطلاعات زیر را در یک پیام بنویسید:\n\n"
+        f"🏷 نام محصول: {product}\n"
+        f"🎨 رنگ مورد نظر: ؟\n"
+        f"📦 تعداد یا متراژ: ؟\n\n"
+        f"مثال:\n"
+        f"رنگ: سفید\n"
+        f"تعداد: ۵۰ عدد",
+        parse_mode="Markdown"
     )
-    bot.register_next_step_handler(msg, get_color_step, product)
+    bot.register_next_step_handler(msg, get_inquiry_step, product)
 
 
-def get_color_step(message, product):
-    if message.text in ["❌ انصراف از استعلام", "انصراف"]:
-        bot.send_message(message.chat.id, "❌ استعلام لغو شد.", reply_markup=types.ReplyKeyboardRemove())
+def get_inquiry_step(message, product):
+    if not message.text:
         show_main_menu(message)
         return
-    color = message.text
-    msg = bot.send_message(
-        message.chat.id,
-        "چه تعداد یا متراژی نیاز داری؟\n\nبرای انصراف بنویس: انصراف",
-        reply_markup=cancel_markup()
-    )
-    bot.register_next_step_handler(msg, get_count_step, product, color)
 
-
-def get_count_step(message, product, color):
-    if message.text in ["❌ انصراف از استعلام", "انصراف"]:
-        bot.send_message(message.chat.id, "❌ استعلام لغو شد.", reply_markup=types.ReplyKeyboardRemove())
-        show_main_menu(message)
-        return
-    count = message.text
     username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {message.from_user.id}"
     user_id = message.from_user.id
 
     admin_text = (
         f"📋 *استعلام موجودی جدید*\n\n"
         f"🏷 محصول: {product}\n"
-        f"🎨 رنگ: {color}\n"
-        f"📦 تعداد: {count}\n"
+        f"📝 اطلاعات مشتری:\n{message.text}\n\n"
         f"👤 از: {username}"
     )
     markup = types.InlineKeyboardMarkup()
@@ -126,7 +110,10 @@ def get_count_step(message, product, color):
         types.InlineKeyboardButton("❌ ناموجود است", callback_data=f"unavail_{user_id}")
     )
     bot.send_message(ADMIN_ID, admin_text, parse_mode="Markdown", reply_markup=markup)
-    bot.send_message(message.chat.id, "✅ درخواست استعلام ثبت شد!\nبه زودی پاسخ دریافت میکنی.", reply_markup=types.ReplyKeyboardRemove())
+    bot.send_message(
+        message.chat.id,
+        "✅ استعلام شما ثبت شد!\n\nبرای دریافت پاسخ موجودی منتظر پیام پشتیبانی باشید 🙏"
+    )
     show_main_menu(message)
 
 
