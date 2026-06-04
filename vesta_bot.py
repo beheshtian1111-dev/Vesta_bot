@@ -494,5 +494,4 @@ def order(message):
 
 
 bot.infinity_polling()
-ENDOFFILE
-echo "Done"
+print("Done")
