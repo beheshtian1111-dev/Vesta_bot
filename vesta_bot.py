@@ -1,4 +1,6 @@
+cat > /mnt/user-data/outputs/vesta_bot/vesta_bot.py << 'ENDOFFILE'
 import telebot
+from telebot import types
 
 TOKEN = "8521280831:AAFNrwcECqrwxHFty9FxIhyPAyPjVa27K-g"
 bot = telebot.TeleBot(TOKEN)
@@ -6,9 +8,14 @@ bot = telebot.TeleBot(TOKEN)
 CHANNEL = "https://t.me/Diivarpoosh"
 CHANNEL_ID = "@Diivarpoosh"
 ADMIN_SUPPORT = "@botSupport_vesta"
+ADMIN_ID = 7333037232
 ADMIN_IDS = [7333037232]
 
+# ذخیره وضعیت استعلام کاربران
+user_inquiry = {}
 
+
+# ===== CHECK MEMBERSHIP =====
 def is_member(user_id):
     try:
         status = bot.get_chat_member(CHANNEL_ID, user_id).status
@@ -17,6 +24,7 @@ def is_member(user_id):
         return False
 
 
+# ===== FILE ID CATCHER =====
 @bot.message_handler(content_types=['photo'])
 def get_file_id(message):
     if message.from_user.id in ADMIN_IDS:
@@ -24,8 +32,9 @@ def get_file_id(message):
         bot.send_message(message.chat.id, f"📦 FILE ID:\n\n`{file_id}`", parse_mode="Markdown")
 
 
+# ===== MENUS =====
 def show_main_menu(message):
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.row("🛍 محصولات", "🛒 ثبت سفارش")
     markup.row("💬 پشتیبانی", "📞 تماس با ما")
     markup.row("🌐 مشاهده سایت", "💰 لیست قیمت")
@@ -33,7 +42,7 @@ def show_main_menu(message):
 
 
 def show_products_menu(message):
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.row("🧱 دیوارپوش فومی پشت چسبدار")
     markup.row("🏠 دیوارپوش فومی رولی")
     markup.row("🪵 ترمووال")
@@ -42,9 +51,31 @@ def show_products_menu(message):
     bot.send_message(message.chat.id, "دسته‌بندی محصولات 👇", reply_markup=markup)
 
 
+def show_foam_menu(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("آجر کلاسیک", "آجر بهمنی")
+    markup.row("چهار پر", "آجر تخت")
+    markup.row("آجر آنتیک", "طرح بتن")
+    markup.row("ترمو فوم", "سنگ آنتیک")
+    markup.row("لوزی")
+    markup.row("🔙 بازگشت به محصولات")
+    bot.send_message(message.chat.id, "🧱 دیوارپوش فومی 👇", reply_markup=markup)
+
+
+# ===== دکمه استعلام موجودی =====
+def inquiry_button(product_name):
+    markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton(
+        "📋 استعلام موجودی",
+        callback_data=f"inquiry_{product_name}"
+    ))
+    return markup
+
+
+# ===== START =====
 @bot.message_handler(commands=['start'])
 def start(message):
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.row("📢 عضویت در کانال", "✅ عضو شدم")
     bot.send_message(message.chat.id, "برای ورود باید عضو کانال باشی 👇", reply_markup=markup)
 
@@ -62,6 +93,7 @@ def enter_shop(message):
     show_main_menu(message)
 
 
+# ===== PRODUCTS =====
 @bot.message_handler(func=lambda m: m.text == "🛍 محصولات")
 def products(message):
     show_products_menu(message)
@@ -69,12 +101,10 @@ def products(message):
 
 @bot.message_handler(func=lambda m: m.text == "🧱 دیوارپوش فومی پشت چسبدار")
 def foam_menu(message):
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("آجر کلاسیک", "آجر بهمنی")
-    markup.row("🔙 بازگشت به محصولات")
-    bot.send_message(message.chat.id, "زیرمجموعه فومی 👇", reply_markup=markup)
+    show_foam_menu(message)
 
 
+# ===== AJOR CLASSIC =====
 @bot.message_handler(func=lambda m: m.text == "آجر کلاسیک")
 def ajor_classic(message):
     caption = "🧱 آجر کلاسیک\n📐 ابعاد: ۷۰ × ۷۷ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان"
@@ -91,10 +121,14 @@ def ajor_classic(message):
         "AgACAgQAAxkBAAIBuGogSJhpGn6xvis1n_lesIKXGFzEAAKEDmsbM2wBUU3hYCWybzGjAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIBuWogSJpl1wx8XzeJY3OojoZiSoiIAAKFDmsbM2wBUXBOmrY2OY_WAQADAgADeAADOwQ",
     ]
-    for fid in file_ids:
-        bot.send_photo(message.chat.id, fid, caption=caption)
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("آجر کلاسیک"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
 
 
+# ===== AJOR BAHMANI =====
 @bot.message_handler(func=lambda m: m.text == "آجر بهمنی")
 def ajor_bahmani(message):
     caption = "🧱 آجر بهمنی\n📐 ابعاد: ۷۰ × ۷۷ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان"
@@ -109,20 +143,148 @@ def ajor_bahmani(message):
         "AgACAgQAAxkBAAIB9WogUUxWYEPOMk0EoolZen5yez61AAKeDmsbM2wBUc2Tv5uQnSYUAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIB9mogUUwUtyRaIm0thnAqI2V-1ksgAAKfDmsbM2wBURRQeAiiSA-hAQADAgADeAADOwQ",
     ]
-    for fid in file_ids:
-        bot.send_photo(message.chat.id, fid, caption=caption)
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("آجر بهمنی"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
 
 
+# ===== چهار پر =====
+@bot.message_handler(func=lambda m: m.text == "چهار پر")
+def char_par(message):
+    caption = "🧱 چهار پر\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان"
+    file_ids = [
+        "AgACAgQAAxkBAAIE12ohbjPXVgq00sQyRmqP618FXNk_AAI4Dmsb2rYQUavcHjeNytujAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE2GohbjPpEWTqtwhooUpDgzPkFsnqAAI5Dmsb2rYQUSsxNF1dCwABPgEAAwIAA3gAAzsE",
+        "AgACAgQAAxkBAAIE2WohbjM3-2B-YXpcKXKBK_bjc0JaAAI6Dmsb2rYQUYUMpuTFEvRoAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE2mohbjOdXPwwNa4WlvY1vIE1NJKGAAI7Dmsb2rYQUXsEsikrPYLHAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE22ohbjOm0jqjcrVBgW-DF2ZDrnhZAAI8Dmsb2rYQUfiCNAqyGTnXAQADAgADbQADOwQ",
+        "AgACAgQAAxkBAAIE3GohbjP5tFkQLkUyz9zJyJLqpTRGAAI9Dmsb2rYQUSCBBvqqjwbxAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE3WohbjNexPlsJYGEum3XwKpgBbjHAAI-Dmsb2rYQUQJuPEPZqvO7AQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE3mohbjMRR-cWeDGq-qkXc2YK_eL5AAI_Dmsb2rYQUXpWFeitNxkCAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE32ohbjO-yMM9dTglXWI1Ket1cuKWAAJADmsb2rYQUZttRzKqpvjNAQADAgADeAADOwQ",
+    ]
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("چهار پر"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
+
+
+# ===== آجر تخت =====
+@bot.message_handler(func=lambda m: m.text == "آجر تخت")
+def ajor_takht(message):
+    caption = "🧱 آجر تخت\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان"
+    file_ids = [
+        "AgACAgQAAxkBAAIE6mohcmfBazcg3607q5tDjoQBQA7bAAJHDmsb2rYQUWoXapgZoYFOAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE6Wohcmf6m5NheC1ysuOUAQFsf0b7AAJGDmsb2rYQUUwTNsuafSkiAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE62ohcmcxkjELMomCp-49EnXNnWXnAAJIDmsb2rYQUU9Y_pn_tOnWAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE7GohcmdsGOhN2XVtdK2RmzgCbHgLAAJJDmsb2rYQUcyN1hfeZycUAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE7WohcmcElA9lRYV-F-GLwaXdmtdHAAJKDmsb2rYQUZB4ctjJjGQ4AQADAgADeAADOwQ",
+    ]
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("آجر تخت"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
+
+
+# ===== آجر آنتیک =====
+@bot.message_handler(func=lambda m: m.text == "آجر آنتیک")
+def ajor_antique(message):
+    caption = "🧱 آجر آنتیک\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان"
+    file_ids = [
+        "AgACAgQAAxkBAAIE9GohcozW62nAdfU50ISIwFDIhOgoAAJMDmsb2rYQUd_QFAQ0m02YAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE82ohcoyUuHUz8EpDNgLkG9za2hzJAAJLDmsb2rYQUQQ8rv-QD-G-AQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE9Wohcoynx5pInTxsA-IRtjmN4LMRAAJNDmsb2rYQUaKqqTyXXgABcAEAAwIAA3gAAzsE",
+    ]
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("آجر آنتیک"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
+
+
+# ===== طرح بتن =====
+@bot.message_handler(func=lambda m: m.text == "طرح بتن")
+def beton(message):
+    caption = "🧱 طرح بتن\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان"
+    file_ids = [
+        "AgACAgQAAxkBAAIE-Wohcr38QB-sokNFECGLL0V9YYU3AAJODmsb2rYQUciRAYQ9fyMlAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE-mohcr2hqn5VUMPnqdGHxIPtIfJNAAJPDmsb2rYQUYbN9GKJo3vSAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIE-2ohcr3mw-ptAAG8mMHSm9O-Z1lfNgACUA5rG9q2EFGJeDty70dZYwEAAwIAA3gAAzsE",
+        "AgACAgQAAxkBAAIE_Gohcr3bkC0LhWMYqnHWJn2AI0WDAAJRDmsb2rYQUYAs3r_C9qpFAQADAgADeAADOwQ",
+    ]
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("طرح بتن"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
+
+
+# ===== ترمو فوم =====
+@bot.message_handler(func=lambda m: m.text == "ترمو فوم")
+def termo_foam(message):
+    caption = "🧱 ترمو فوم\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان"
+    file_ids = [
+        "AgACAgQAAxkBAAIFC2ohcv7ZtloacYVD-RqX9Dk7UrI_AAJTDmsb2rYQUdmvAmXlKX3zAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIFCmohcv7KLHbOMuYS8lYNo7oQ-jGkAAJSDmsb2rYQUUaOrajgklhBAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIFDGohcv5LwEGDjziFtSdquJHvaSK4AAJUDmsb2rYQUfbPZscKxRA1AQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIFDWohcv7WvBk3vAh0yjjrzSy41QpjAAJVDmsb2rYQUYDKAhh3WZS4AQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIFDmohcv7Ic7cR1Fza_e1jJjXQLqioAAJWDmsb2rYQUVG-Uo8eL2WfAQADAgADeAADOwQ",
+    ]
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("ترمو فوم"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
+
+
+# ===== سنگ آنتیک =====
+@bot.message_handler(func=lambda m: m.text == "سنگ آنتیک")
+def sang_antique(message):
+    caption = "🧱 سنگ آنتیک\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان"
+    file_ids = [
+        "AgACAgQAAxkBAAIFFWohcxc5c2heSPLil6zSpH19VDZdAAJYDmsb2rYQUXuJ2MTE0HZAAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIFFGohcxfqL3fTHqI2bDYmF2o6RMiRAAJXDmsb2rYQUXOLl--qclFWAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIFFmohcxcMaH4s7Hd00NVxghTZfE-XAAJZDmsb2rYQUb-9o7DzKrSTAQADAgADeAADOwQ",
+    ]
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("سنگ آنتیک"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
+
+
+# ===== لوزی =====
+@bot.message_handler(func=lambda m: m.text == "لوزی")
+def lozi(message):
+    caption = "🧱 لوزی\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان"
+    file_ids = [
+        "AgACAgQAAxkBAAIFHWohczGfsBtYh8wEZuGGheVB7lrwAAJaDmsb2rYQUXFk75-0ZeN5AQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIFHmohczEcFp9rzQMBunZ2bC5Czn6TAAJbDmsb2rYQUS9mimGJDu97AQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIFH2ohczGEVGW0zpYm_0xkgrM-wBlCAAJcDmsb2rYQUdlwf7banIKYAQADAgADeAADOwQ",
+    ]
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("لوزی"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
+
+
+# ===== FOAM ROLL =====
 @bot.message_handler(func=lambda m: m.text == "🏠 دیوارپوش فومی رولی")
 def foam_roll(message):
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.row("🔙 بازگشت به محصولات")
     bot.send_message(message.chat.id, "🏠 دیوارپوش فومی رولی\nبرای اطلاعات بیشتر با پشتیبانی تماس بگیر.\n" + ADMIN_SUPPORT, reply_markup=markup)
 
 
+# ===== TERMO =====
 @bot.message_handler(func=lambda m: m.text == "🪵 ترمووال")
 def termo_menu(message):
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.row("PVC 20cm", "MDF 50cm")
     markup.row("🔙 بازگشت به محصولات")
     bot.send_message(message.chat.id, "ترمووال 👇", reply_markup=markup)
@@ -145,8 +307,11 @@ def pvc20(message):
         "AgACAgQAAxkBAAICkmogZJJzttqdxDCJyoIaMB6wynvjAAKRD2sbhIIAAVEdLBY8Sptx3QEAAwIAA3kAAzsE",
         "AgACAgQAAxkBAAICk2ogZJIg2Ez3vNlbzHaLVjnooOK7AAKSD2sbhIIAAVHnDgh2yjUXwgEAAwIAA3kAAzsE",
     ]
-    for fid in file_ids:
-        bot.send_photo(message.chat.id, fid, caption=caption)
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("ترمووال PVC 20cm"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
 
 
 @bot.message_handler(func=lambda m: m.text == "MDF 50cm")
@@ -162,13 +327,17 @@ def mdf50(message):
         "AgACAgQAAxkBAAIC7GogaFR-jtE6yFCnq5pNIEzOaOsTAAKZD2sbhIIAAVFjiDY-LokqaQEAAwIAA3kAAzsE",
         "AgACAgQAAxkBAAIC7WogaFQ8XyIodtWoOBmJcBlI-bK1AAKaD2sbhIIAAVF2XX-dWGMzBQEAAwIAA3kAAzsE",
     ]
-    for fid in file_ids:
-        bot.send_photo(message.chat.id, fid, caption=caption)
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("ترمووال MDF 50cm"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
 
 
+# ===== FLOOR =====
 @bot.message_handler(func=lambda m: m.text == "⬜ کفپوش")
 def floor_menu(message):
-    markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.row("طرح سنگ", "طرح پارکت")
     markup.row("🔙 بازگشت به محصولات")
     bot.send_message(message.chat.id, "کفپوش 👇", reply_markup=markup)
@@ -192,8 +361,11 @@ def stone_floor(message):
         "AgACAgQAAxkBAAICP2ogXTKpo_hadsKGb-gR8jrHQneEAALIDmsbM2wBUSyORIDaCw2NAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAICQGogXTIBgaumDOP2i358PaxZWZktAALJDmsbM2wBUaJSGh46_eyDAQADAgADeAADOwQ",
     ]
-    for fid in file_ids:
-        bot.send_photo(message.chat.id, fid, caption=caption)
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("کفپوش طرح سنگ"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
 
 
 @bot.message_handler(func=lambda m: m.text == "طرح پارکت")
@@ -213,10 +385,72 @@ def parquet_floor(message):
         "AgACAgQAAxkBAAIDz2oggUbR5M0syN0xgREr3tm1MOhbAALkD2sbhIIAAVGEWtG9YsA2VQEAAwIAA3gAAzsE",
         "AgACAgQAAxkBAAID0GoggUbR3BiYCX2II_82nxTsYJARAALlD2sbhIIAAVH-YOnIP4QNJAEAAwIAA3gAAzsE",
     ]
-    for fid in file_ids:
-        bot.send_photo(message.chat.id, fid, caption=caption)
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(message.chat.id, fid, caption=caption, reply_markup=inquiry_button("کفپوش طرح پارکت"))
+        else:
+            bot.send_photo(message.chat.id, fid, caption=caption)
 
 
+# ===== استعلام موجودی =====
+@bot.callback_query_handler(func=lambda call: call.data.startswith("inquiry_"))
+def handle_inquiry(call):
+    product = call.data.replace("inquiry_", "")
+    user_inquiry[call.from_user.id] = {"product": product, "step": "color"}
+    bot.answer_callback_query(call.id)
+    bot.send_message(call.message.chat.id, f"📋 استعلام موجودی *{product}*\n\nچه رنگی مد نظر داری؟", parse_mode="Markdown")
+
+
+@bot.message_handler(func=lambda m: m.from_user.id in user_inquiry and user_inquiry[m.from_user.id].get("step") == "color")
+def get_color(message):
+    user_inquiry[message.from_user.id]["color"] = message.text
+    user_inquiry[message.from_user.id]["step"] = "count"
+    bot.send_message(message.chat.id, "چه تعداد/متراژی نیاز داری؟")
+
+
+@bot.message_handler(func=lambda m: m.from_user.id in user_inquiry and user_inquiry[m.from_user.id].get("step") == "count")
+def get_count(message):
+    data = user_inquiry[message.from_user.id]
+    data["count"] = message.text
+    product = data["product"]
+    color = data["color"]
+    count = data["count"]
+    username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {message.from_user.id}"
+
+    # ارسال به ادمین
+    admin_text = (
+        f"📋 *استعلام موجودی جدید*\n\n"
+        f"🏷 محصول: {product}\n"
+        f"🎨 رنگ: {color}\n"
+        f"📦 تعداد: {count}\n"
+        f"👤 از: {username}"
+    )
+    markup = types.InlineKeyboardMarkup()
+    markup.row(
+        types.InlineKeyboardButton("✅ موجود است", callback_data=f"available_{message.from_user.id}"),
+        types.InlineKeyboardButton("❌ ناموجود است", callback_data=f"unavailable_{message.from_user.id}")
+    )
+    bot.send_message(ADMIN_ID, admin_text, parse_mode="Markdown", reply_markup=markup)
+
+    # پاسخ به مشتری
+    bot.send_message(message.chat.id, "✅ درخواست استعلام شما ثبت شد!\nبه زودی پاسخ دریافت میکنی.")
+    del user_inquiry[message.from_user.id]
+
+
+# ===== پاسخ ادمین به استعلام =====
+@bot.callback_query_handler(func=lambda call: call.data.startswith("available_") or call.data.startswith("unavailable_"))
+def handle_admin_response(call):
+    user_id = int(call.data.split("_")[1])
+    if call.data.startswith("available_"):
+        bot.send_message(user_id, "✅ محصول مورد نظر شما *موجود* است!\nبرای ثبت سفارش با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
+        bot.answer_callback_query(call.id, "پاسخ موجود ارسال شد ✅")
+    else:
+        bot.send_message(user_id, "❌ متأسفانه محصول مورد نظر شما در حال حاضر *ناموجود* است.\nبرای اطلاعات بیشتر با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
+        bot.answer_callback_query(call.id, "پاسخ ناموجود ارسال شد ❌")
+    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+
+
+# ===== BACK =====
 @bot.message_handler(func=lambda m: m.text == "🔙 بازگشت")
 def back(message):
     show_main_menu(message)
@@ -227,6 +461,7 @@ def back_products(message):
     show_products_menu(message)
 
 
+# ===== CONTACT =====
 @bot.message_handler(func=lambda m: m.text == "📞 تماس با ما")
 def contact(message):
     bot.send_message(message.chat.id, "📞 09120646909\n📞 09370072236")
@@ -246,8 +481,7 @@ def site(message):
 def price_list(message):
     bot.send_message(message.chat.id,
         "💰 لیست قیمت محصولات:\n\n"
-        "🧱 آجر کلاسیک — تایلی ۳۸۰ تومان\n"
-        "🧱 آجر بهمنی — تایلی ۳۸۰ تومان\n"
+        "🧱 دیوارپوش فومی — تایلی ۳۸۰ تومان\n"
         "🪵 ترمووال PVC 20cm — ۶۲۰ تومان\n"
         "🪵 ترمووال MDF 50cm — تماس بگیرید\n"
         "⬜ کفپوش طرح سنگ — ورقی ۴۴۰ تومان\n"
@@ -261,3 +495,5 @@ def order(message):
 
 
 bot.infinity_polling()
+ENDOFFILE
+echo "Done"
