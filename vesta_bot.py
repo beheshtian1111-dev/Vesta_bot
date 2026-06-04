@@ -10,8 +10,6 @@ ADMIN_SUPPORT = "@botSupport_vesta"
 ADMIN_ID = 7333037232
 ADMIN_IDS = [7333037232]
 
-user_inquiry = {}
-
 
 def is_member(user_id):
     try:
@@ -72,6 +70,82 @@ def send_photos(chat_id, file_ids, caption, product_name):
             bot.send_photo(chat_id, fid, caption=caption)
 
 
+# ===== استعلام موجودی با register_next_step_handler =====
+def cancel_markup():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("❌ انصراف از استعلام")
+    return markup
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("inquiry_"))
+def handle_inquiry(call):
+    product = call.data.replace("inquiry_", "")
+    bot.answer_callback_query(call.id)
+    msg = bot.send_message(
+        call.message.chat.id,
+        f"📋 *استعلام موجودی {product}*\n\nچه رنگی مد نظر داری؟\n\nبرای انصراف بنویس: انصراف",
+        parse_mode="Markdown",
+        reply_markup=cancel_markup()
+    )
+    bot.register_next_step_handler(msg, get_color_step, product)
+
+
+def get_color_step(message, product):
+    if message.text in ["❌ انصراف از استعلام", "انصراف"]:
+        bot.send_message(message.chat.id, "❌ استعلام لغو شد.", reply_markup=types.ReplyKeyboardRemove())
+        show_main_menu(message)
+        return
+    color = message.text
+    msg = bot.send_message(
+        message.chat.id,
+        "چه تعداد یا متراژی نیاز داری؟\n\nبرای انصراف بنویس: انصراف",
+        reply_markup=cancel_markup()
+    )
+    bot.register_next_step_handler(msg, get_count_step, product, color)
+
+
+def get_count_step(message, product, color):
+    if message.text in ["❌ انصراف از استعلام", "انصراف"]:
+        bot.send_message(message.chat.id, "❌ استعلام لغو شد.", reply_markup=types.ReplyKeyboardRemove())
+        show_main_menu(message)
+        return
+    count = message.text
+    username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {message.from_user.id}"
+    user_id = message.from_user.id
+
+    admin_text = (
+        f"📋 *استعلام موجودی جدید*\n\n"
+        f"🏷 محصول: {product}\n"
+        f"🎨 رنگ: {color}\n"
+        f"📦 تعداد: {count}\n"
+        f"👤 از: {username}"
+    )
+    markup = types.InlineKeyboardMarkup()
+    markup.row(
+        types.InlineKeyboardButton("✅ موجود است", callback_data=f"avail_{user_id}"),
+        types.InlineKeyboardButton("❌ ناموجود است", callback_data=f"unavail_{user_id}")
+    )
+    bot.send_message(ADMIN_ID, admin_text, parse_mode="Markdown", reply_markup=markup)
+    bot.send_message(message.chat.id, "✅ درخواست استعلام ثبت شد!\nبه زودی پاسخ دریافت میکنی.", reply_markup=types.ReplyKeyboardRemove())
+    show_main_menu(message)
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("avail_") or call.data.startswith("unavail_"))
+def handle_admin_response(call):
+    user_id = int(call.data.split("_")[1])
+    if call.data.startswith("avail_"):
+        bot.send_message(user_id, "✅ محصول مورد نظر شما *موجود* است!\nبرای ثبت سفارش با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
+        bot.answer_callback_query(call.id, "پاسخ موجود ارسال شد ✅")
+    else:
+        bot.send_message(user_id, "❌ متأسفانه محصول مورد نظر در حال حاضر *ناموجود* است.\nبرای اطلاعات بیشتر با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
+        bot.answer_callback_query(call.id, "پاسخ ناموجود ارسال شد ❌")
+    try:
+        bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+    except:
+        pass
+
+
+# ===== START =====
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -301,7 +375,7 @@ def parquet_floor(message):
 
 
 @bot.message_handler(func=lambda m: m.text == "📐 قرنیز")
-def qarniz_menu(message):
+def qarniz(message):
     send_photos(message.chat.id, [
         "AgACAgQAAxkBAAIFI2ohejFtz_Nu3D6Qfn9vMetG6RCtAAJzDmsb2rYQUYfb1SEAAXJe6QEAAwIAA3gAAzsE",
         "AgACAgQAAxkBAAIFJGohejGh8aizhTs8OW3gWbvhYcfgAAJ0Dmsb2rYQUcyiWWKbn2QPAQADAgADeAADOwQ",
@@ -311,63 +385,6 @@ def qarniz_menu(message):
         "AgACAgQAAxkBAAIFKGohejHroYKiOiD7gok4sIzzS8ZdAAJ4Dmsb2rYQUdB71qyEVqsVAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFKWohejFKGMbubnLi2m0gyWF2dqPiAAJ5Dmsb2rYQUaj1DcqRb94cAQADAgADeAADOwQ",
     ], "📐 قرنیز\n📐 ابعاد: ۹ سانت × ۲۸۰ سانت\n💰 قیمت: ۲۶۰ تومان", "قرنیز")
-
-
-# ===== استعلام موجودی =====
-@bot.callback_query_handler(func=lambda call: call.data.startswith("inquiry_"))
-def handle_inquiry(call):
-    product = call.data.replace("inquiry_", "")
-    user_inquiry[call.from_user.id] = {"product": product, "step": "color"}
-    bot.answer_callback_query(call.id)
-    bot.send_message(call.message.chat.id, f"📋 استعلام موجودی *{product}*\n\nچه رنگی مد نظر داری؟", parse_mode="Markdown")
-
-
-@bot.message_handler(func=lambda m: m.from_user.id in user_inquiry and user_inquiry[m.from_user.id].get("step") == "color")
-def get_color(message):
-    user_inquiry[message.from_user.id]["color"] = message.text
-    user_inquiry[message.from_user.id]["step"] = "count"
-    bot.send_message(message.chat.id, "چه تعداد یا متراژی نیاز داری؟")
-
-
-@bot.message_handler(func=lambda m: m.from_user.id in user_inquiry and user_inquiry[m.from_user.id].get("step") == "count")
-def get_count(message):
-    data = user_inquiry[message.from_user.id]
-    product = data["product"]
-    color = data["color"]
-    count = message.text
-    username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {message.from_user.id}"
-    user_id = message.from_user.id
-
-    admin_text = (
-        f"📋 *استعلام موجودی جدید*\n\n"
-        f"🏷 محصول: {product}\n"
-        f"🎨 رنگ: {color}\n"
-        f"📦 تعداد: {count}\n"
-        f"👤 از: {username}"
-    )
-    markup = types.InlineKeyboardMarkup()
-    markup.row(
-        types.InlineKeyboardButton("✅ موجود است", callback_data=f"avail_{user_id}"),
-        types.InlineKeyboardButton("❌ ناموجود است", callback_data=f"unavail_{user_id}")
-    )
-    bot.send_message(ADMIN_ID, admin_text, parse_mode="Markdown", reply_markup=markup)
-    bot.send_message(message.chat.id, "✅ درخواست استعلام شما ثبت شد!\nبه زودی پاسخ دریافت میکنی.")
-    del user_inquiry[user_id]
-
-
-@bot.callback_query_handler(func=lambda call: call.data.startswith("avail_") or call.data.startswith("unavail_"))
-def handle_admin_response(call):
-    user_id = int(call.data.split("_")[1])
-    if call.data.startswith("avail_"):
-        bot.send_message(user_id, "✅ محصول مورد نظر شما *موجود* است!\nبرای ثبت سفارش با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
-        bot.answer_callback_query(call.id, "پاسخ موجود ارسال شد ✅")
-    else:
-        bot.send_message(user_id, "❌ متأسفانه محصول مورد نظر در حال حاضر *ناموجود* است.\nبرای اطلاعات بیشتر با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
-        bot.answer_callback_query(call.id, "پاسخ ناموجود ارسال شد ❌")
-    try:
-        bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
-    except:
-        pass
 
 
 # ===== BACK =====
