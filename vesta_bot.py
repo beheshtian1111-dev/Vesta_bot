@@ -90,7 +90,8 @@ def handle_inquiry(call):
         f"مثال:\n"
         f"رنگ: سفید\n"
         f"تعداد: ۵۰ عدد",
-        parse_mode="Markdown"
+        parse_mode="Markdown",
+        reply_markup=types.ReplyKeyboardRemove()
     )
     bot.register_next_step_handler(msg, get_inquiry_step, product)
 
