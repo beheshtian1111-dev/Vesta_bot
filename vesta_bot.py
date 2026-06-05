@@ -92,7 +92,7 @@ def handle_inquiry(call):
 
 def get_inquiry_step(message, product):
     if not message.text:
-        show_main_menu(message)
+        bot.send_message(message.chat.id, "❌ لطفاً اطلاعات را به صورت متن بنویس.")
         return
 
     username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {message.from_user.id}"
@@ -114,7 +114,6 @@ def get_inquiry_step(message, product):
         message.chat.id,
         "✅ استعلام شما ثبت شد!\n\nبرای دریافت پاسخ موجودی منتظر پیام پشتیبانی باشید 🙏"
     )
-    show_main_menu(message)
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("avail_") or call.data.startswith("unavail_"))
