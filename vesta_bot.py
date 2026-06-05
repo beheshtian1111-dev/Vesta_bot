@@ -75,7 +75,11 @@ def send_photos(chat_id, file_ids, caption, product_name):
 @bot.callback_query_handler(func=lambda call: call.data.startswith("inquiry_"))
 def handle_inquiry(call):
     product = call.data.replace("inquiry_", "")
-    bot.answer_callback_query(call.id)
+    try:
+        bot.answer_callback_query(call.id)
+    except:
+        pass
+
     msg = bot.send_message(
         call.message.chat.id,
         f"📋 *استعلام موجودی — {product}*\n\n"
@@ -92,8 +96,8 @@ def handle_inquiry(call):
 
 
 def get_inquiry_step(message, product):
-    if not message.text:
-        bot.send_message(message.chat.id, "❌ لطفاً اطلاعات را به صورت متن بنویس.")
+    if not message.text or message.text.startswith("🔙") or message.text in ["🛍 محصولات", "🛒 ثبت سفارش", "💬 پشتیبانی", "📞 تماس با ما", "🌐 مشاهده سایت", "💰 لیست قیمت"]:
+        bot.send_message(message.chat.id, "❌ فرآیند استعلام لغو شد. لطفاً مجدداً روی دکمه استعلام موجودی زیر محصول کلیک کنید و اطلاعات را ارسال کنید.")
         return
 
     username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {message.from_user.id}"
@@ -103,33 +107,55 @@ def get_inquiry_step(message, product):
         f"📋 *استعلام موجودی جدید*\n\n"
         f"🏷 محصول: {product}\n"
         f"📝 اطلاعات مشتری:\n{message.text}\n\n"
-        f"👤 از: {username}"
+        f"👤 از: {username}\n"
+        f"🆔 آیدی عددی: `{user_id}`"
     )
+
     markup = types.InlineKeyboardMarkup()
     markup.row(
         types.InlineKeyboardButton("✅ موجود است", callback_data=f"avail_{user_id}"),
         types.InlineKeyboardButton("❌ ناموجود است", callback_data=f"unavail_{user_id}")
     )
-    bot.send_message(ADMIN_ID, admin_text, parse_mode="Markdown", reply_markup=markup)
-    bot.send_message(
-        message.chat.id,
-        "✅ استعلام شما ثبت شد!\n\nبرای دریافت پاسخ موجودی منتظر پیام پشتیبانی باشید 🙏"
-    )
+
+    admin_sent = False
+    try:
+        bot.send_message(ADMIN_ID, admin_text, parse_mode="Markdown", reply_markup=markup)
+        admin_sent = True
+    except Exception as e:
+        print(f"Error sending to admin: {e}")
+        for adm_id in ADMIN_IDS:
+            try:
+                bot.send_message(adm_id, admin_text, parse_mode="Markdown", reply_markup=markup)
+                admin_sent = True
+                break
+            except:
+                continue
+
+    if admin_sent:
+        bot.send_message(
+            message.chat.id,
+            "✅ استعلام شما با موفقیت برای پشتیبانی ارسال شد!\n\nبرای دریافت پاسخ موجودی منتظر پیام ربات باشید 🙏"
+        )
+    else:
+        bot.send_message(
+            message.chat.id,
+            "❌ خطایی رخ داد. لطفاً مستقیم با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT
+        )
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("avail_") or call.data.startswith("unavail_"))
 def handle_admin_response(call):
     user_id = int(call.data.split("_")[1])
-    if call.data.startswith("avail_"):
-        bot.send_message(user_id, "✅ محصول مورد نظر شما *موجود* است!\nبرای ثبت سفارش با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
-        bot.answer_callback_query(call.id, "پاسخ موجود ارسال شد ✅")
-    else:
-        bot.send_message(user_id, "❌ متأسفانه محصول مورد نظر در حال حاضر *ناموجود* است.\nبرای اطلاعات بیشتر با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
-        bot.answer_callback_query(call.id, "پاسخ ناموجود ارسال شد ❌")
     try:
+        if call.data.startswith("avail_"):
+            bot.send_message(user_id, "✅ محصول مورد نظر شما *موجود* است!\n\nبرای ثبت سفارش با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
+            bot.answer_callback_query(call.id, "پاسخ موجود ارسال شد ✅")
+        else:
+            bot.send_message(user_id, "❌ متأسفانه محصول مورد نظر در حال حاضر *ناموجود* است.\n\nبرای اطلاعات بیشتر با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
+            bot.answer_callback_query(call.id, "پاسخ ناموجود ارسال شد ❌")
         bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
-    except:
-        pass
+    except Exception as e:
+        bot.answer_callback_query(call.id, "❌ خطا در ارسال پیام به کاربر")
 
 
 # ===== START =====
