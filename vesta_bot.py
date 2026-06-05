@@ -47,6 +47,7 @@ def show_products_menu(message):
     markup.row("🪵 ترمووال")
     markup.row("⬜ کفپوش")
     markup.row("📐 قرنیز")
+    markup.row("🖼 ابزار قاب بندی")
     markup.row("🔙 بازگشت")
     bot.send_message(message.chat.id, "دسته‌بندی محصولات 👇", reply_markup=markup)
 
@@ -371,6 +372,20 @@ def qarniz(message):
         "AgACAgQAAxkBAAIFKGohejHroYKiOiD7gok4sIzzS8ZdAAJ4Dmsb2rYQUdB71qyEVqsVAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFKWohejFKGMbubnLi2m0gyWF2dqPiAAJ5Dmsb2rYQUaj1DcqRb94cAQADAgADeAADOwQ",
     ], "📐 قرنیز\n📐 ابعاد: ۹ سانت × ۲۸۰ سانت\n💰 قیمت: ۲۶۰ تومان", "قرنیز")
+
+
+@bot.message_handler(func=lambda m: m.text == "🖼 ابزار قاب بندی")
+def abzar_ghabbandi(message):
+    file_ids = [
+        "AgACAgQAAxkBAAIGeGoikNm8HnELftYwnuNqN2lgKq1HAAJWD2sbqCgZUVyYMkRApZ0QAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIGeWoikNldvo-pPBcIRLfkflr3VrlcAAJXD2sbqCgZUUILtVr6oeVLAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIGemoikNk_FgnoU8yVmcB4taew1M6QAAJYD2sbqCgZUe0UmolqO7WGAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIGe2oikNlAnQqIp1K2M1AwgBrOGHqhAAJZD2sbqCgZUc8slXbEF70wAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIGfGoikNk849zVNNhAHPnIC7iXkmgXAAJaD2sbqCgZUViZqGBWmMTCAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIGfWoikNkFKIha_5YyPxRyrykbQBx-AAJbD2sbqCgZUeMwjhdhjozRAQADAgADeQADOwQ",
+    ]
+    for fid in file_ids:
+        bot.send_photo(message.chat.id, fid)
 
 
 # ===== BACK =====
