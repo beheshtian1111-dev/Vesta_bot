@@ -1,3 +1,4 @@
+cat > /mnt/user-data/outputs/vesta_bot/vesta_bot.py << 'ENDOFFILE'
 import telebot
 from telebot import types
 import threading
@@ -22,6 +23,8 @@ CHANNEL_ID = "@Diivarpoosh"
 ADMIN_SUPPORT = "@botSupport_vesta"
 ADMIN_ID = 7333037232
 ADMIN_IDS = [7333037232]
+WHATSAPP = "https://wa.me/989120646909"
+INSTAGRAM = "https://www.instagram.com/divar.posh?igsh=b2ZlbmkycGU3M2Rj&utm_source=qr"
 
 
 def is_member(user_id):
@@ -43,35 +46,25 @@ def inquiry_button(product_name):
     markup = types.InlineKeyboardMarkup()
     markup.row(
         types.InlineKeyboardButton("📋 استعلام موجودی", callback_data=f"inquiry_{product_name}"),
-        types.InlineKeyboardButton("🛒 افزودن به سبد", callback_data=f"cart_{product_name}")
+        types.InlineKeyboardButton("🛒 ثبت سفارش", callback_data=f"order_{product_name}")
     )
     return markup
-
-# سبد خرید کاربران
-user_carts = {}
-
-def get_cart(user_id):
-    if user_id not in user_carts:
-        user_carts[user_id] = []
-    return user_carts[user_id]
-
-def cart_summary(user_id):
-    cart = get_cart(user_id)
-    if not cart:
-        return "🛒 سبد خرید شما خالی است."
-    text = "🛒 *سبد خرید شما:*\n\n"
-    for i, item in enumerate(cart, 1):
-        text += f"{i}. {item['product']} — رنگ: {item['color']} — تعداد: {item['count']}\n"
-    text += f"\n📦 تعداد اقلام: {len(cart)}"
-    return text
 
 
 def show_main_menu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("🛍 محصولات", "🛒 سبد خرید")
-    markup.row("💬 پشتیبانی", "📞 تماس با ما")
-    markup.row("🌐 مشاهده سایت", "💰 لیست قیمت")
+    markup.row("🛍 محصولات", "💬 پشتیبانی")
+    markup.row("📞 تماس با ما", "📱 واتساپ")
+    markup.row("📸 اینستاگرام", "🌐 سایت")
     bot.send_message(message.chat.id, "🏠 منوی اصلی 👇", reply_markup=markup)
+
+
+def show_main_menu_by_id(chat_id):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("🛍 محصولات", "💬 پشتیبانی")
+    markup.row("📞 تماس با ما", "📱 واتساپ")
+    markup.row("📸 اینستاگرام", "🌐 سایت")
+    bot.send_message(chat_id, "🏠 منوی اصلی 👇", reply_markup=markup)
 
 
 def show_products_menu(message):
@@ -108,169 +101,7 @@ def send_photos(chat_id, file_ids, caption, product_name):
             bot.send_photo(chat_id, fid, caption=caption)
 
 
-# ===== سبد خرید =====
-user_carts = {}
-
-def get_cart(user_id):
-    if user_id not in user_carts:
-        user_carts[user_id] = []
-    return user_carts[user_id]
-
-def cart_summary(user_id):
-    cart = get_cart(user_id)
-    if not cart:
-        return "🛒 سبد خرید شما خالی است."
-    text = "🛒 *سبد خرید شما:*\n\n"
-    for i, item in enumerate(cart, 1):
-        text += f"{i}. {item['product']} — رنگ: {item['color']} — تعداد: {item['count']}\n"
-    text += f"\n📦 تعداد اقلام: {len(cart)}"
-    return text
-
-def show_main_menu_by_id(chat_id):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("🛍 محصولات", "🛒 سبد خرید")
-    markup.row("💬 پشتیبانی", "📞 تماس با ما")
-    markup.row("🌐 مشاهده سایت", "💰 لیست قیمت")
-    bot.send_message(chat_id, "🏠 منوی اصلی 👇", reply_markup=markup)
-
-
-@bot.callback_query_handler(func=lambda call: call.data.startswith("cart_"))
-def handle_add_to_cart(call):
-    product = call.data.replace("cart_", "")
-    try:
-        bot.answer_callback_query(call.id)
-    except:
-        pass
-    msg = bot.send_message(
-        call.message.chat.id,
-        f"🛒 *افزودن به سبد — {product}*\n\nرنگ مورد نظر را بنویسید:",
-        parse_mode="Markdown",
-        reply_markup=types.ReplyKeyboardRemove()
-    )
-    bot.register_next_step_handler(msg, cart_get_color, product)
-
-
-def cart_get_color(message, product):
-    color = message.text
-    msg = bot.send_message(message.chat.id, "تعداد یا متراژ مورد نیاز را بنویسید:")
-    bot.register_next_step_handler(msg, cart_get_count, product, color)
-
-
-def cart_get_count(message, product, color):
-    count = message.text
-    user_id = message.from_user.id
-    get_cart(user_id).append({"product": product, "color": color, "count": count})
-    markup = types.InlineKeyboardMarkup()
-    markup.row(
-        types.InlineKeyboardButton("🛒 مشاهده سبد", callback_data="show_cart"),
-        types.InlineKeyboardButton("🛍 ادامه خرید", callback_data="continue_shopping")
-    )
-    show_main_menu_by_id(message.chat.id)
-    bot.send_message(
-        message.chat.id,
-        f"✅ *{product}* به سبد اضافه شد!\nرنگ: {color} — تعداد: {count}",
-        parse_mode="Markdown",
-        reply_markup=markup
-    )
-
-
-@bot.callback_query_handler(func=lambda call: call.data == "show_cart")
-def show_cart_callback(call):
-    try:
-        bot.answer_callback_query(call.id)
-    except:
-        pass
-    user_id = call.from_user.id
-    cart = get_cart(user_id)
-    text = cart_summary(user_id)
-    markup = types.InlineKeyboardMarkup()
-    if cart:
-        markup.row(types.InlineKeyboardButton("✅ ثبت سفارش", callback_data="checkout"))
-        markup.row(types.InlineKeyboardButton("🗑 پاک کردن سبد", callback_data="clear_cart"))
-    markup.row(types.InlineKeyboardButton("🛍 ادامه خرید", callback_data="continue_shopping"))
-    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
-
-
-@bot.callback_query_handler(func=lambda call: call.data == "clear_cart")
-def clear_cart_callback(call):
-    try:
-        bot.answer_callback_query(call.id)
-    except:
-        pass
-    user_carts[call.from_user.id] = []
-    bot.send_message(call.message.chat.id, "🗑 سبد خرید پاک شد.")
-    show_main_menu_by_id(call.message.chat.id)
-
-
-@bot.callback_query_handler(func=lambda call: call.data == "continue_shopping")
-def continue_shopping_callback(call):
-    try:
-        bot.answer_callback_query(call.id)
-    except:
-        pass
-    show_main_menu_by_id(call.message.chat.id)
-
-
-@bot.callback_query_handler(func=lambda call: call.data == "checkout")
-def checkout_callback(call):
-    try:
-        bot.answer_callback_query(call.id)
-    except:
-        pass
-    cart = get_cart(call.from_user.id)
-    if not cart:
-        bot.send_message(call.message.chat.id, "❌ سبد خرید خالی است.")
-        return
-    msg = bot.send_message(
-        call.message.chat.id,
-        "📝 *ثبت سفارش*\n\nنام و نام خانوادگی:",
-        parse_mode="Markdown",
-        reply_markup=types.ReplyKeyboardRemove()
-    )
-    bot.register_next_step_handler(msg, checkout_get_name, cart.copy())
-
-
-def checkout_get_name(message, cart):
-    msg = bot.send_message(message.chat.id, "شماره تماس:")
-    bot.register_next_step_handler(msg, checkout_get_phone, cart, message.text)
-
-
-def checkout_get_phone(message, cart, name):
-    msg = bot.send_message(message.chat.id, "آدرس کامل:")
-    bot.register_next_step_handler(msg, checkout_get_address, cart, name, message.text)
-
-
-def checkout_get_address(message, cart, name, phone):
-    address = message.text
-    user_id = message.from_user.id
-    username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {user_id}"
-
-    order_text = (
-        f"🛒 *سفارش جدید*\n\n"
-        f"👤 نام: {name}\n"
-        f"📞 تماس: {phone}\n"
-        f"📍 آدرس: {address}\n"
-        f"👤 یوزرنیم: {username}\n\n"
-        f"📦 *محصولات:*\n"
-    )
-    for i, item in enumerate(cart, 1):
-        order_text += f"{i}. {item['product']} — رنگ: {item['color']} — تعداد: {item['count']}\n"
-
-    try:
-        bot.send_message(ADMIN_ID, order_text, parse_mode="Markdown")
-    except Exception as e:
-        print(f"Error sending order: {e}")
-
-    user_carts[user_id] = []
-    bot.send_message(
-        message.chat.id,
-        "✅ *سفارش شما ثبت شد!*\n\nبه زودی همکاران ما با شما تماس میگیرند.\nبرای پیگیری:\n" + ADMIN_SUPPORT,
-        parse_mode="Markdown"
-    )
-    show_main_menu_by_id(message.chat.id)
-
-
-# ===== استعلام موجودی با register_next_step_handler =====
+# ===== استعلام موجودی =====
 @bot.callback_query_handler(func=lambda call: call.data.startswith("inquiry_"))
 def handle_inquiry(call):
     product = call.data.replace("inquiry_", "")
@@ -278,7 +109,6 @@ def handle_inquiry(call):
         bot.answer_callback_query(call.id)
     except:
         pass
-
     msg = bot.send_message(
         call.message.chat.id,
         f"📋 *استعلام موجودی — {product}*\n\n"
@@ -290,73 +120,135 @@ def handle_inquiry(call):
         f"رنگ: سفید\n"
         f"تعداد: ۵۰ عدد",
         parse_mode="Markdown",
-        reply_markup=types.ReplyKeyboardRemove()
+        reply_markup=types.ReplyKeyboardMarkup(resize_keyboard=True).add(
+            types.KeyboardButton("🔙 بازگشت به منو")
+        )
     )
-    bot.register_next_step_handler(msg, get_inquiry_step, product)
+    bot.register_next_step_handler(msg, inquiry_step, product)
 
 
-def get_inquiry_step(message, product):
-    if not message.text or message.text.startswith("🔙") or message.text in ["🛍 محصولات", "🛒 ثبت سفارش", "💬 پشتیبانی", "📞 تماس با ما", "🌐 مشاهده سایت", "💰 لیست قیمت"]:
-        bot.send_message(message.chat.id, "❌ فرآیند استعلام لغو شد. لطفاً مجدداً روی دکمه استعلام موجودی زیر محصول کلیک کنید و اطلاعات را ارسال کنید.")
+def inquiry_step(message, product):
+    if message.text == "🔙 بازگشت به منو":
+        show_main_menu(message)
         return
-
     username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {message.from_user.id}"
     user_id = message.from_user.id
-
     admin_text = (
         f"📋 *استعلام موجودی جدید*\n\n"
         f"🏷 محصول: {product}\n"
-        f"📝 اطلاعات مشتری:\n{message.text}\n\n"
+        f"📝 اطلاعات:\n{message.text}\n\n"
         f"👤 از: {username}\n"
-        f"🆔 آیدی عددی: `{user_id}`"
+        f"🆔 آیدی: `{user_id}`"
     )
-
     markup = types.InlineKeyboardMarkup()
     markup.row(
         types.InlineKeyboardButton("✅ موجود است", callback_data=f"avail_{user_id}"),
         types.InlineKeyboardButton("❌ ناموجود است", callback_data=f"unavail_{user_id}")
     )
-
     admin_sent = False
     try:
         bot.send_message(ADMIN_ID, admin_text, parse_mode="Markdown", reply_markup=markup)
         admin_sent = True
     except Exception as e:
-        print(f"Error sending to admin: {e}")
-        for adm_id in ADMIN_IDS:
-            try:
-                bot.send_message(adm_id, admin_text, parse_mode="Markdown", reply_markup=markup)
-                admin_sent = True
-                break
-            except:
-                continue
-
+        print(f"Error: {e}")
     if admin_sent:
-        bot.send_message(
-            message.chat.id,
-            "✅ استعلام شما با موفقیت برای پشتیبانی ارسال شد!\n\nبرای دریافت پاسخ موجودی منتظر پیام ربات باشید 🙏"
-        )
+        bot.send_message(message.chat.id, "✅ استعلام ثبت شد!\nمنتظر پاسخ پشتیبانی باشید 🙏")
     else:
-        bot.send_message(
-            message.chat.id,
-            "❌ خطایی رخ داد. لطفاً مستقیم با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT
+        bot.send_message(message.chat.id, "❌ خطا. با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT)
+    show_main_menu(message)
+
+
+# ===== ثبت سفارش =====
+@bot.callback_query_handler(func=lambda call: call.data.startswith("order_"))
+def handle_order(call):
+    product = call.data.replace("order_", "")
+    try:
+        bot.answer_callback_query(call.id)
+    except:
+        pass
+    msg = bot.send_message(
+        call.message.chat.id,
+        f"🛒 *ثبت سفارش — {product}*\n\n"
+        f"لطفاً اطلاعات زیر را در یک پیام بنویسید:\n\n"
+        f"🏷 نام محصول: {product}\n"
+        f"🎨 رنگ مورد نظر: ؟\n"
+        f"📦 تعداد یا متراژ: ؟\n\n"
+        f"مثال:\n"
+        f"رنگ: سفید\n"
+        f"تعداد: ۵۰ عدد",
+        parse_mode="Markdown",
+        reply_markup=types.ReplyKeyboardMarkup(resize_keyboard=True).add(
+            types.KeyboardButton("🔙 بازگشت به منو")
         )
-    show_main_menu_by_id(message.chat.id)
+    )
+    bot.register_next_step_handler(msg, order_product_step, product)
 
 
+def order_product_step(message, product):
+    if message.text == "🔙 بازگشت به منو":
+        show_main_menu(message)
+        return
+    order_info = message.text
+    msg = bot.send_message(message.chat.id, "📝 نام و نام خانوادگی:")
+    bot.register_next_step_handler(msg, order_name_step, product, order_info)
+
+
+def order_name_step(message, product, order_info):
+    if message.text == "🔙 بازگشت به منو":
+        show_main_menu(message)
+        return
+    msg = bot.send_message(message.chat.id, "📞 شماره تماس:")
+    bot.register_next_step_handler(msg, order_phone_step, product, order_info, message.text)
+
+
+def order_phone_step(message, product, order_info, name):
+    if message.text == "🔙 بازگشت به منو":
+        show_main_menu(message)
+        return
+    msg = bot.send_message(message.chat.id, "📍 آدرس کامل:")
+    bot.register_next_step_handler(msg, order_address_step, product, order_info, name, message.text)
+
+
+def order_address_step(message, product, order_info, name, phone):
+    if message.text == "🔙 بازگشت به منو":
+        show_main_menu(message)
+        return
+    username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {message.from_user.id}"
+    order_text = (
+        f"🛒 *سفارش جدید*\n\n"
+        f"🏷 محصول: {product}\n"
+        f"📝 مشخصات: {order_info}\n\n"
+        f"👤 نام: {name}\n"
+        f"📞 تماس: {phone}\n"
+        f"📍 آدرس: {message.text}\n"
+        f"👤 یوزرنیم: {username}"
+    )
+    try:
+        bot.send_message(ADMIN_ID, order_text, parse_mode="Markdown")
+    except Exception as e:
+        print(f"Error: {e}")
+    bot.send_message(
+        message.chat.id,
+        "✅ *سفارش شما ثبت شد!*\n\nبه زودی با شما تماس گرفته میشود.\nبرای پیگیری:\n" + ADMIN_SUPPORT,
+        parse_mode="Markdown"
+    )
+    show_main_menu(message)
+
+
+# ===== پاسخ ادمین به استعلام =====
 @bot.callback_query_handler(func=lambda call: call.data.startswith("avail_") or call.data.startswith("unavail_"))
 def handle_admin_response(call):
     user_id = int(call.data.split("_")[1])
     try:
         if call.data.startswith("avail_"):
-            bot.send_message(user_id, "✅ محصول مورد نظر شما *موجود* است!\n\nبرای ثبت سفارش با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
+            bot.send_message(user_id, "✅ محصول مورد نظر *موجود* است!\nبرای ثبت سفارش:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
             bot.answer_callback_query(call.id, "پاسخ موجود ارسال شد ✅")
         else:
-            bot.send_message(user_id, "❌ متأسفانه محصول مورد نظر در حال حاضر *ناموجود* است.\n\nبرای اطلاعات بیشتر با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
+            bot.send_message(user_id, "❌ محصول مورد نظر *ناموجود* است.\nبرای اطلاعات بیشتر:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
             bot.answer_callback_query(call.id, "پاسخ ناموجود ارسال شد ❌")
         bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
     except Exception as e:
-        bot.answer_callback_query(call.id, "❌ خطا در ارسال پیام به کاربر")
+        bot.answer_callback_query(call.id, "❌ خطا در ارسال پیام")
 
 
 # ===== START =====
@@ -375,7 +267,7 @@ def join_channel(message):
 @bot.message_handler(func=lambda m: m.text == "✅ عضو شدم")
 def enter_shop(message):
     if not is_member(message.from_user.id):
-        bot.send_message(message.chat.id, "❌ هنوز عضو کانال نشدی!\nاول عضو بشو بعد دوباره امتحان کن 👇\n" + CHANNEL)
+        bot.send_message(message.chat.id, "❌ هنوز عضو کانال نشدی!\nاول عضو بشو:\n" + CHANNEL)
         return
     show_main_menu(message)
 
@@ -697,6 +589,11 @@ def back(message):
     show_main_menu(message)
 
 
+@bot.message_handler(func=lambda m: m.text == "🔙 بازگشت به منو")
+def back_to_menu(message):
+    show_main_menu(message)
+
+
 @bot.message_handler(func=lambda m: m.text == "🔙 بازگشت به محصولات")
 def back_products(message):
     show_products_menu(message)
@@ -712,39 +609,21 @@ def support(message):
     bot.send_message(message.chat.id, ADMIN_SUPPORT)
 
 
-@bot.message_handler(func=lambda m: m.text == "🌐 مشاهده سایت")
+@bot.message_handler(func=lambda m: m.text == "🌐 سایت")
 def site(message):
-    bot.send_message(message.chat.id, "https://vestadeccor.com")
+    bot.send_message(message.chat.id, "🌐 https://vestadeccor.com")
 
 
-@bot.message_handler(func=lambda m: m.text == "💰 لیست قیمت")
-def price_list(message):
-    bot.send_message(message.chat.id,
-        "💰 لیست قیمت محصولات:\n\n"
-        "🧱 دیوارپوش فومی — تایلی ۳۸۰ تومان\n"
-        "🪵 ترمووال PVC 20cm — ۶۲۰ تومان\n"
-        "🪵 ترمووال MDF 50cm — تماس بگیرید\n"
-        "⬜ کفپوش طرح سنگ — ورقی ۴۴۰ تومان\n"
-        "⬜ کفپوش طرح پارکت — کارتنی ۳.۹۶۰ تومان\n"
-        "📐 قرنیز — ۲۶۰ تومان\n\n"
-        "📞 09120646909\n📞 09370072236")
+@bot.message_handler(func=lambda m: m.text == "📱 واتساپ")
+def whatsapp(message):
+    bot.send_message(message.chat.id, f"📱 واتساپ:\n{WHATSAPP}")
 
 
-@bot.message_handler(func=lambda m: m.text == "🛒 سبد خرید")
-def cart_menu(message):
-    user_id = message.from_user.id
-    cart = get_cart(user_id)
-    text = cart_summary(user_id)
-    markup = types.InlineKeyboardMarkup()
-    if cart:
-        markup.row(types.InlineKeyboardButton("✅ ثبت سفارش", callback_data="checkout"))
-        markup.row(types.InlineKeyboardButton("🗑 پاک کردن سبد", callback_data="clear_cart"))
-    bot.send_message(message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
-
-
-@bot.message_handler(func=lambda m: m.text == "🛒 ثبت سفارش")
-def order(message):
-    bot.send_message(message.chat.id, "🛒 برای ثبت سفارش با پشتیبانی در ارتباط باش:\n" + ADMIN_SUPPORT)
+@bot.message_handler(func=lambda m: m.text == "📸 اینستاگرام")
+def instagram(message):
+    bot.send_message(message.chat.id, f"📸 اینستاگرام:\n{INSTAGRAM}")
 
 
 bot.infinity_polling()
+ENDOFFILE
+echo "Done"
