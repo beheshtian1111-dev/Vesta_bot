@@ -162,6 +162,7 @@ def cart_get_count(message, product, color):
         types.InlineKeyboardButton("🛒 مشاهده سبد", callback_data="show_cart"),
         types.InlineKeyboardButton("🛍 ادامه خرید", callback_data="continue_shopping")
     )
+    show_main_menu_by_id(message.chat.id)
     bot.send_message(
         message.chat.id,
         f"✅ *{product}* به سبد اضافه شد!\nرنگ: {color} — تعداد: {count}",
