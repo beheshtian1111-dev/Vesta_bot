@@ -14,7 +14,7 @@ def run_flask():
 
 threading.Thread(target=run_flask).start()
 
-TOKEN = "8521280831:AAFaoH1I_4Eg3Dtbnml5OmXz8SAuS6GLGCY"
+TOKEN = "8521280831:AAFNY87OllRFkPiXGQmn5OkCMZLP2RW5lK8"
 bot = telebot.TeleBot(TOKEN)
 
 CHANNEL = "https://t.me/Diivarpoosh"
@@ -41,13 +41,34 @@ def get_file_id(message):
 
 def inquiry_button(product_name):
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("📋 استعلام موجودی", callback_data=f"inquiry_{product_name}"))
+    markup.row(
+        types.InlineKeyboardButton("📋 استعلام موجودی", callback_data=f"inquiry_{product_name}"),
+        types.InlineKeyboardButton("🛒 افزودن به سبد", callback_data=f"cart_{product_name}")
+    )
     return markup
+
+# سبد خرید کاربران
+user_carts = {}
+
+def get_cart(user_id):
+    if user_id not in user_carts:
+        user_carts[user_id] = []
+    return user_carts[user_id]
+
+def cart_summary(user_id):
+    cart = get_cart(user_id)
+    if not cart:
+        return "🛒 سبد خرید شما خالی است."
+    text = "🛒 *سبد خرید شما:*\n\n"
+    for i, item in enumerate(cart, 1):
+        text += f"{i}. {item['product']} — رنگ: {item['color']} — تعداد: {item['count']}\n"
+    text += f"\n📦 تعداد اقلام: {len(cart)}"
+    return text
 
 
 def show_main_menu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("🛍 محصولات", "🛒 ثبت سفارش")
+    markup.row("🛍 محصولات", "🛒 سبد خرید")
     markup.row("💬 پشتیبانی", "📞 تماس با ما")
     markup.row("🌐 مشاهده سایت", "💰 لیست قیمت")
     bot.send_message(message.chat.id, "🏠 منوی اصلی 👇", reply_markup=markup)
@@ -82,6 +103,167 @@ def send_photos(chat_id, file_ids, caption, product_name):
             bot.send_photo(chat_id, fid, caption=caption, reply_markup=inquiry_button(product_name))
         else:
             bot.send_photo(chat_id, fid, caption=caption)
+
+
+# ===== سبد خرید =====
+user_carts = {}
+
+def get_cart(user_id):
+    if user_id not in user_carts:
+        user_carts[user_id] = []
+    return user_carts[user_id]
+
+def cart_summary(user_id):
+    cart = get_cart(user_id)
+    if not cart:
+        return "🛒 سبد خرید شما خالی است."
+    text = "🛒 *سبد خرید شما:*\n\n"
+    for i, item in enumerate(cart, 1):
+        text += f"{i}. {item['product']} — رنگ: {item['color']} — تعداد: {item['count']}\n"
+    text += f"\n📦 تعداد اقلام: {len(cart)}"
+    return text
+
+def show_main_menu_by_id(chat_id):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("🛍 محصولات", "🛒 سبد خرید")
+    markup.row("💬 پشتیبانی", "📞 تماس با ما")
+    markup.row("🌐 مشاهده سایت", "💰 لیست قیمت")
+    bot.send_message(chat_id, "🏠 منوی اصلی 👇", reply_markup=markup)
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("cart_"))
+def handle_add_to_cart(call):
+    product = call.data.replace("cart_", "")
+    try:
+        bot.answer_callback_query(call.id)
+    except:
+        pass
+    msg = bot.send_message(
+        call.message.chat.id,
+        f"🛒 *افزودن به سبد — {product}*\n\nرنگ مورد نظر را بنویسید:",
+        parse_mode="Markdown",
+        reply_markup=types.ReplyKeyboardRemove()
+    )
+    bot.register_next_step_handler(msg, cart_get_color, product)
+
+
+def cart_get_color(message, product):
+    color = message.text
+    msg = bot.send_message(message.chat.id, "تعداد یا متراژ مورد نیاز را بنویسید:")
+    bot.register_next_step_handler(msg, cart_get_count, product, color)
+
+
+def cart_get_count(message, product, color):
+    count = message.text
+    user_id = message.from_user.id
+    get_cart(user_id).append({"product": product, "color": color, "count": count})
+    markup = types.InlineKeyboardMarkup()
+    markup.row(
+        types.InlineKeyboardButton("🛒 مشاهده سبد", callback_data="show_cart"),
+        types.InlineKeyboardButton("🛍 ادامه خرید", callback_data="continue_shopping")
+    )
+    bot.send_message(
+        message.chat.id,
+        f"✅ *{product}* به سبد اضافه شد!\nرنگ: {color} — تعداد: {count}",
+        parse_mode="Markdown",
+        reply_markup=markup
+    )
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "show_cart")
+def show_cart_callback(call):
+    try:
+        bot.answer_callback_query(call.id)
+    except:
+        pass
+    user_id = call.from_user.id
+    cart = get_cart(user_id)
+    text = cart_summary(user_id)
+    markup = types.InlineKeyboardMarkup()
+    if cart:
+        markup.row(types.InlineKeyboardButton("✅ ثبت سفارش", callback_data="checkout"))
+        markup.row(types.InlineKeyboardButton("🗑 پاک کردن سبد", callback_data="clear_cart"))
+    markup.row(types.InlineKeyboardButton("🛍 ادامه خرید", callback_data="continue_shopping"))
+    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "clear_cart")
+def clear_cart_callback(call):
+    try:
+        bot.answer_callback_query(call.id)
+    except:
+        pass
+    user_carts[call.from_user.id] = []
+    bot.send_message(call.message.chat.id, "🗑 سبد خرید پاک شد.")
+    show_main_menu_by_id(call.message.chat.id)
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "continue_shopping")
+def continue_shopping_callback(call):
+    try:
+        bot.answer_callback_query(call.id)
+    except:
+        pass
+    show_main_menu_by_id(call.message.chat.id)
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "checkout")
+def checkout_callback(call):
+    try:
+        bot.answer_callback_query(call.id)
+    except:
+        pass
+    cart = get_cart(call.from_user.id)
+    if not cart:
+        bot.send_message(call.message.chat.id, "❌ سبد خرید خالی است.")
+        return
+    msg = bot.send_message(
+        call.message.chat.id,
+        "📝 *ثبت سفارش*\n\nنام و نام خانوادگی:",
+        parse_mode="Markdown",
+        reply_markup=types.ReplyKeyboardRemove()
+    )
+    bot.register_next_step_handler(msg, checkout_get_name, cart.copy())
+
+
+def checkout_get_name(message, cart):
+    msg = bot.send_message(message.chat.id, "شماره تماس:")
+    bot.register_next_step_handler(msg, checkout_get_phone, cart, message.text)
+
+
+def checkout_get_phone(message, cart, name):
+    msg = bot.send_message(message.chat.id, "آدرس کامل:")
+    bot.register_next_step_handler(msg, checkout_get_address, cart, name, message.text)
+
+
+def checkout_get_address(message, cart, name, phone):
+    address = message.text
+    user_id = message.from_user.id
+    username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {user_id}"
+
+    order_text = (
+        f"🛒 *سفارش جدید*\n\n"
+        f"👤 نام: {name}\n"
+        f"📞 تماس: {phone}\n"
+        f"📍 آدرس: {address}\n"
+        f"👤 یوزرنیم: {username}\n\n"
+        f"📦 *محصولات:*\n"
+    )
+    for i, item in enumerate(cart, 1):
+        order_text += f"{i}. {item['product']} — رنگ: {item['color']} — تعداد: {item['count']}\n"
+
+    try:
+        bot.send_message(ADMIN_ID, order_text, parse_mode="Markdown")
+    except Exception as e:
+        print(f"Error sending order: {e}")
+
+    user_carts[user_id] = []
+    bot.send_message(
+        message.chat.id,
+        "✅ *سفارش شما ثبت شد!*\n\nبه زودی همکاران ما با شما تماس میگیرند.\nبرای پیگیری:\n" + ADMIN_SUPPORT,
+        parse_mode="Markdown"
+    )
+    show_main_menu_by_id(message.chat.id)
 
 
 # ===== استعلام موجودی با register_next_step_handler =====
@@ -465,6 +647,18 @@ def price_list(message):
         "⬜ کفپوش طرح پارکت — کارتنی ۳.۹۶۰ تومان\n"
         "📐 قرنیز — ۲۶۰ تومان\n\n"
         "📞 09120646909\n📞 09370072236")
+
+
+@bot.message_handler(func=lambda m: m.text == "🛒 سبد خرید")
+def cart_menu(message):
+    user_id = message.from_user.id
+    cart = get_cart(user_id)
+    text = cart_summary(user_id)
+    markup = types.InlineKeyboardMarkup()
+    if cart:
+        markup.row(types.InlineKeyboardButton("✅ ثبت سفارش", callback_data="checkout"))
+        markup.row(types.InlineKeyboardButton("🗑 پاک کردن سبد", callback_data="clear_cart"))
+    bot.send_message(message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
 @bot.message_handler(func=lambda m: m.text == "🛒 ثبت سفارش")
