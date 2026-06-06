@@ -82,17 +82,20 @@ def show_products_menu(message):
     markup.row("⬜ کفپوش")
     markup.row("📐 قرنیز")
     markup.row("🖼 ابزار قاب بندی")
+    markup.row("🪨 لمسه پشت چسبدار")
     markup.row("🔙 بازگشت")
     bot.send_message(message.chat.id, "دسته‌بندی محصولات 👇", reply_markup=markup)
 
 
 def show_foam_menu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("آجر کلاسیک", "آجر بهمنی")
-    markup.row("چهار پر", "آجر تخت")
-    markup.row("آجر آنتیک", "طرح بتن")
-    markup.row("ترمو فوم", "سنگ آنتیک")
-    markup.row("لوزی")
+    markup.row("🧱 آجر کلاسیک", "🧱 آجر بهمنی")
+    markup.row("🔶 چهار پر", "🟫 آجر تخت")
+    markup.row("🏛 آجر آنتیک", "🩶 طرح بتن")
+    markup.row("🌿 ترمو فوم", "🪨 سنگ آنتیک")
+    markup.row("💠 لوزی", "🎋 بامبو")
+    markup.row("💎 کریستال", "⬛ مربع")
+    markup.row("✨ هشت پر")
     markup.row("🔙 بازگشت به محصولات")
     bot.send_message(message.chat.id, "🧱 دیوارپوش فومی 👇", reply_markup=markup)
 
@@ -338,6 +341,7 @@ def get_inquiry_step(message, product):
             message.chat.id,
             "❌ خطایی رخ داد. لطفاً مستقیم با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT
         )
+    show_main_menu_by_id(message.chat.id)
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("avail_") or call.data.startswith("unavail_"))
@@ -386,7 +390,7 @@ def foam_menu(message):
     show_foam_menu(message)
 
 
-@bot.message_handler(func=lambda m: m.text == "آجر کلاسیک")
+@bot.message_handler(func=lambda m: m.text == "🧱 آجر کلاسیک")
 def ajor_classic(message):
     send_photos(message.chat.id, [
         "AgACAgQAAxkBAAIBr2ogSJiqIZkc6tHU9wRMd_T4ZOvBAAJ7DmsbM2wBUW9wP_Oqe1JMAQADAgADeAADOwQ",
@@ -403,7 +407,7 @@ def ajor_classic(message):
     ], "🧱 آجر کلاسیک\n📐 ابعاد: ۷۰ × ۷۷ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "آجر کلاسیک")
 
 
-@bot.message_handler(func=lambda m: m.text == "آجر بهمنی")
+@bot.message_handler(func=lambda m: m.text == "🧱 آجر بهمنی")
 def ajor_bahmani(message):
     send_photos(message.chat.id, [
         "AgACAgQAAxkBAAIB7mogUUx8tn_vBScy801IodcVMyeNAAKXDmsbM2wBUc-E1tThaYSoAQADAgADeAADOwQ",
@@ -418,7 +422,7 @@ def ajor_bahmani(message):
     ], "🧱 آجر بهمنی\n📐 ابعاد: ۷۰ × ۷۷ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "آجر بهمنی")
 
 
-@bot.message_handler(func=lambda m: m.text == "چهار پر")
+@bot.message_handler(func=lambda m: m.text == "🔶 چهار پر")
 def char_par(message):
     send_photos(message.chat.id, [
         "AgACAgQAAxkBAAIE12ohbjPXVgq00sQyRmqP618FXNk_AAI4Dmsb2rYQUavcHjeNytujAQADAgADeAADOwQ",
@@ -430,10 +434,10 @@ def char_par(message):
         "AgACAgQAAxkBAAIE3WohbjNexPlsJYGEum3XwKpgBbjHAAI-Dmsb2rYQUQJuPEPZqvO7AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE3mohbjMRR-cWeDGq-qkXc2YK_eL5AAI_Dmsb2rYQUXpWFeitNxkCAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE32ohbjO-yMM9dTglXWI1Ket1cuKWAAJADmsb2rYQUZttRzKqpvjNAQADAgADeAADOwQ",
-    ], "🧱 چهار پر\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "چهار پر")
+    ], "🔶 چهار پر\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "چهار پر")
 
 
-@bot.message_handler(func=lambda m: m.text == "آجر تخت")
+@bot.message_handler(func=lambda m: m.text == "🟫 آجر تخت")
 def ajor_takht(message):
     send_photos(message.chat.id, [
         "AgACAgQAAxkBAAIE6mohcmfBazcg3607q5tDjoQBQA7bAAJHDmsb2rYQUWoXapgZoYFOAQADAgADeAADOwQ",
@@ -441,29 +445,29 @@ def ajor_takht(message):
         "AgACAgQAAxkBAAIE62ohcmcxkjELMomCp-49EnXNnWXnAAJIDmsb2rYQUU9Y_pn_tOnWAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE7GohcmdsGOhN2XVtdK2RmzgCbHgLAAJJDmsb2rYQUcyN1hfeZycUAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE7WohcmcElA9lRYV-F-GLwaXdmtdHAAJKDmsb2rYQUZB4ctjJjGQ4AQADAgADeAADOwQ",
-    ], "🧱 آجر تخت\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "آجر تخت")
+    ], "🟫 آجر تخت\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "آجر تخت")
 
 
-@bot.message_handler(func=lambda m: m.text == "آجر آنتیک")
+@bot.message_handler(func=lambda m: m.text == "🏛 آجر آنتیک")
 def ajor_antique(message):
     send_photos(message.chat.id, [
         "AgACAgQAAxkBAAIE9GohcozW62nAdfU50ISIwFDIhOgoAAJMDmsb2rYQUd_QFAQ0m02YAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE82ohcoyUuHUz8EpDNgLkG9za2hzJAAJLDmsb2rYQUQQ8rv-QD-G-AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE9Wohcoynx5pInTxsA-IRtjmN4LMRAAJNDmsb2rYQUaKqqTyXXgABcAEAAwIAA3gAAzsE",
-    ], "🧱 آجر آنتیک\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "آجر آنتیک")
+    ], "🏛 آجر آنتیک\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "آجر آنتیک")
 
 
-@bot.message_handler(func=lambda m: m.text == "طرح بتن")
+@bot.message_handler(func=lambda m: m.text == "🩶 طرح بتن")
 def beton(message):
     send_photos(message.chat.id, [
         "AgACAgQAAxkBAAIE-Wohcr38QB-sokNFECGLL0V9YYU3AAJODmsb2rYQUciRAYQ9fyMlAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE-mohcr2hqn5VUMPnqdGHxIPtIfJNAAJPDmsb2rYQUYbN9GKJo3vSAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE-2ohcr3mw-ptAAG8mMHSm9O-Z1lfNgACUA5rG9q2EFGJeDty70dZYwEAAwIAA3gAAzsE",
         "AgACAgQAAxkBAAIE_Gohcr3bkC0LhWMYqnHWJn2AI0WDAAJRDmsb2rYQUYAs3r_C9qpFAQADAgADeAADOwQ",
-    ], "🧱 طرح بتن\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "طرح بتن")
+    ], "🩶 طرح بتن\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "طرح بتن")
 
 
-@bot.message_handler(func=lambda m: m.text == "ترمو فوم")
+@bot.message_handler(func=lambda m: m.text == "🌿 ترمو فوم")
 def termo_foam(message):
     send_photos(message.chat.id, [
         "AgACAgQAAxkBAAIFC2ohcv7ZtloacYVD-RqX9Dk7UrI_AAJTDmsb2rYQUdmvAmXlKX3zAQADAgADeAADOwQ",
@@ -471,25 +475,85 @@ def termo_foam(message):
         "AgACAgQAAxkBAAIFDGohcv5LwEGDjziFtSdquJHvaSK4AAJUDmsb2rYQUfbPZscKxRA1AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFDWohcv7WvBk3vAh0yjjrzSy41QpjAAJVDmsb2rYQUYDKAhh3WZS4AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFDmohcv7Ic7cR1Fza_e1jJjXQLqioAAJWDmsb2rYQUVG-Uo8eL2WfAQADAgADeAADOwQ",
-    ], "🧱 ترمو فوم\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "ترمو فوم")
+    ], "🌿 ترمو فوم\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "ترمو فوم")
 
 
-@bot.message_handler(func=lambda m: m.text == "سنگ آنتیک")
+@bot.message_handler(func=lambda m: m.text == "🪨 سنگ آنتیک")
 def sang_antique(message):
     send_photos(message.chat.id, [
         "AgACAgQAAxkBAAIFFWohcxc5c2heSPLil6zSpH19VDZdAAJYDmsb2rYQUXuJ2MTE0HZAAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFFGohcxfqL3fTHqI2bDYmF2o6RMiRAAJXDmsb2rYQUXOLl--qclFWAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFFmohcxcMaH4s7Hd00NVxghTZfE-XAAJZDmsb2rYQUb-9o7DzKrSTAQADAgADeAADOwQ",
-    ], "🧱 سنگ آنتیک\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "سنگ آنتیک")
+    ], "🪨 سنگ آنتیک\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "سنگ آنتیک")
 
 
-@bot.message_handler(func=lambda m: m.text == "لوزی")
+@bot.message_handler(func=lambda m: m.text == "💠 لوزی")
 def lozi(message):
     send_photos(message.chat.id, [
         "AgACAgQAAxkBAAIFHWohczGfsBtYh8wEZuGGheVB7lrwAAJaDmsb2rYQUXFk75-0ZeN5AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFHmohczEcFp9rzQMBunZ2bC5Czn6TAAJbDmsb2rYQUS9mimGJDu97AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFH2ohczGEVGW0zpYm_0xkgrM-wBlCAAJcDmsb2rYQUdlwf7banIKYAQADAgADeAADOwQ",
-    ], "🧱 لوزی\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "لوزی")
+    ], "💠 لوزی\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "لوزی")
+
+
+@bot.message_handler(func=lambda m: m.text == "🎋 بامبو")
+def bambo(message):
+    send_photos(message.chat.id, [
+        "AgACAgQAAxkBAAIHnmokG6bvEFshOt9TRuWREPBZ_0kkAAKDD2sb4dwgUepBTwraWApDAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHn2okG6ZDK16l-aglNabXL0JA2lW3AAKED2sb4dwgUU2YQ51nOBL0AQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHoGokG6bgWKS5f1CTfU_flOmkwgZ1AAKFD2sb4dwgUSjFuQJ_jlkkAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHoWokG6YpY0IXBPSzkP45hdIQmK1bAAKGD2sb4dwgUQLzm6xVItRUAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHomokG6Yj-hPpqlCT9h25Gk5nENbyAAKHD2sb4dwgUQABwh1xbFyaIgEAAwIAA3gAAzsE",
+        "AgACAgQAAxkBAAIHo2okG6YBIVL3jzyqwk-mSXDghZzCAAKID2sb4dwgUW5jFj0OgLidAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHpGokG6aZtwwdkcXQ4LKN-rsAAQJ7iAACiQ9rG-HcIFEhPoXebtYTLwEAAwIAA3gAAzsE",
+        "AgACAgQAAxkBAAIHpWokG6Zu3ussijLqAQEIcSUDtlJzAAKKD2sb4dwgUVoK5m_sH4WYAQADAgADeAADOwQ",
+    ], "🎋 بامبو\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "بامبو")
+
+
+@bot.message_handler(func=lambda m: m.text == "💎 کریستال")
+def crystal(message):
+    send_photos(message.chat.id, [
+        "AgACAgQAAxkBAAIHtWokHIEXBn6UJ99um1tlOihW5gOAAAKMD2sb4dwgUbn9uyrxxQ1XAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHtmokHIGOpjWJ01MxZvAbeSO1Aza_AAKND2sb4dwgUc9LR8BU10E-AQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHt2okHIH5Z9IROPqIB6gHROxBRUhkAAKOD2sb4dwgUcx4bCXVZTGOAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHuGokHIEcAXth9Uy-a3zXPZZv-1-wAAKPD2sb4dwgUfpMRh6hpd-JAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHuWokHIFW1pexP6qebxYSFb0UT4V0AAKQD2sb4dwgUSnYsVyf8-PgAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHumokHIE-2Lhvj8sEzwABdCTkKc8vagACkQ9rG-HcIFGqmNBU7_f6iQEAAwIAA3gAAzsE",
+        "AgACAgQAAxkBAAIHu2okHIG4Oci-ho78civDRR5NekuBAAKSD2sb4dwgUStBzF7lusAnAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHvGokHIFVTiEwX2jptFCkRYVwuLOHAAKTD2sb4dwgUfsKcxVMMVLnAQADAgADeAADOwQ",
+    ], "💎 کریستال\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "کریستال")
+
+
+@bot.message_handler(func=lambda m: m.text == "⬛ مربع")
+def moraba(message):
+    send_photos(message.chat.id, [
+        "AgACAgQAAxkBAAIHxmokHOXUxZmZ26ZE6gQmP5EQjhDEAAKVD2sb4dwgUdRybeQgkwABXAEAAwIAA3gAAzsE",
+        "AgACAgQAAxkBAAIHxWokHOVnHckEteDE39GP8SHaiIrBAAKUD2sb4dwgUTWGemVpep8VAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHx2okHOV-xIw5P_keyn-SzHUYiLWmAAKWD2sb4dwgUWtnTv7a09klAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHyGokHOWGdOV4F4dDSz1BeQzannfRAAKXD2sb4dwgUUqnIn6Bi8FHAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHyWokHOWGBTopcPwrXP0r_J9uFRwvAAKYD2sb4dwgUTwb95cvBuw-AQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHymokHOWe5zYp92xOJyxThTaBsTSdAAKZD2sb4dwgUcmMUppD350BAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHy2okHOUub8kKKfWCnKGYL_Y3N5HpAAKaD2sb4dwgUUyddTOHF5glAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHzGokHOXgL4huP-l6ixE9BzbJPGQ8AAKbD2sb4dwgUf4eXiazL8fLAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHzWokHOWe-cgDtZeXnCfHhHIXuncsAAKcD2sb4dwgUTPtyjecrrMYAQADAgADeAADOwQ",
+    ], "⬛ مربع\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "مربع")
+
+
+@bot.message_handler(func=lambda m: m.text == "✨ هشت پر")
+def hasht_par(message):
+    send_photos(message.chat.id, [
+        "AgACAgQAAxkBAAIH2mokHRu3A5cJXDa0FRzOJ_LEN3MKAAKeD2sb4dwgUfefoa_aLzGGAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIH2WokHRtHqBke_lWL3AK3WlMxGN5rAAKdD2sb4dwgUTlKRG_OKvuQAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIH22okHRvUu7HDSzE7mL-tXk_WtU6YAAKfD2sb4dwgUQiFZUABuTR5AQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIH3GokHRvXTmvXIkgVW-eRBZnmT0cHAAKgD2sb4dwgUXoI5WppekmEAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIH3WokHRt5n_ZEFH7mZ92ygPxLHhKrAAKhD2sb4dwgUaxfkWDoaXTDAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIH3mokHRsvcbGoywtlhcWuAg6CzO5AAAKiD2sb4dwgUTFLoe5cwA5mAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIH32okHRv9NId50NHkgsfWcmk0AAF55gACow9rG-HcIFH_TVDE3Ibj6wEAAwIAA3gAAzsE",
+        "AgACAgQAAxkBAAIH4GokHRuBnkkp3T6rwlxxmeTsLPHuAAKkD2sb4dwgUR4DZr95b5XuAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIH4WokHRtVcjZ3Yk9GG70ORf7F_X7xAAKlD2sb4dwgUej8pouYdUUvAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIH4mokHRtR2doYsc3invsDh_0wRh7hAAKmD2sb4dwgUfhYyCOzuvHWAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIH42okHRy29B_TaALWORgSkTlhChBxAAKnD2sb4dwgUTC0lzrR2KrrAQADAgADeAADOwQ",
+    ], "✨ هشت پر\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "هشت پر")
 
 
 @bot.message_handler(func=lambda m: m.text == "🏠 دیوارپوش فومی رولی")
@@ -609,6 +673,22 @@ def abzar_ghabbandi(message):
     ]
     for fid in file_ids:
         bot.send_photo(message.chat.id, fid)
+
+
+@bot.message_handler(func=lambda m: m.text == "🪨 لمسه پشت چسبدار")
+def lamse(message):
+    send_photos(message.chat.id, [
+        "AgACAgQAAxkBAAIHc2oj844GN6B6Mqxqgm4cni_6aEJkAAJND2sb4dwgUSU0Ps9m3sstAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIHdGoj8471VZUlm-1TgMNPIZ8so24GAAJOD2sb4dwgUX9jY97EOpbPAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIHdWoj845x0VJPWS0EyMlx_LG_UnhOAAJPD2sb4dwgUWvnkm4Zr63fAQADAgADeAADOwQ",
+        "AgACAgQAAxkBAAIHdmoj847rK2beFTtxfMFPuRRVPl4oAAJQD2sb4dwgUYRE8nr0EuvWAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIHd2oj8473ASYFF_DUyYAuF6FHqO0CAAJRD2sb4dwgUdm6wzENmA_rAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIHeGoj846u-2IF5g65LOvu4fbGuIfRAAJSD2sb4dwgUYgw8NepI5HmAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIHeWoj8455m-xXCw0f8r16wapRHCIJAAJTD2sb4dwgUb-J1bv3zRN_AQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIHemoj844kzHIIYM5wRQ_UXGwzydAfAAJUD2sb4dwgUcVP99BfX_5GAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIHe2oj847_Um4TQDFUu7GkbcVsRVgBAAJVD2sb4dwgUUoS8cDyWJypAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAIHfGoj847Pj4Viez9Cm-P_Isu8UqCOAAJWD2sb4dwgUf_VRcbUSyYMAQADAgADeQADOwQ",
+    ], "🪨 لمسه پشت چسبدار\n📐 ابعاد: ۴۷ × ۴۷ سانتی‌متر\n💰 قیمت تایلی: ۲۷۰ تومان", "لمسه پشت چسبدار")
 
 
 # ===== BACK =====
