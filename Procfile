@@ -1,1 +1,1 @@
-worker: python vesta_bot.py
+web: python vesta_bot.py
