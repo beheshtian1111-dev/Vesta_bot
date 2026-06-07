@@ -14,7 +14,7 @@ def run_flask():
 
 threading.Thread(target=run_flask).start()
 
-TOKEN = "8521280831:AAFNY87OllRFkPiXGQmn5OkCMZLP2RW5lK8"
+TOKEN = "8521280831:AAGnbbW-ikeJPb8338w8cDO4SgSksS2TmzY"
 bot = telebot.TeleBot(TOKEN)
 
 CHANNEL = "https://t.me/Diivarpoosh"
