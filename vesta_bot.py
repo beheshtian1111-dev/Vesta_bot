@@ -42,6 +42,49 @@ def get_file_id(message):
 
 
 
+def show_main_menu(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("🛍 محصولات", "💬 پشتیبانی")
+    markup.row("📞 تماس با ما", "📱 واتساپ")
+    markup.row("📸 اینستاگرام", "🌐 سایت")
+    bot.send_message(message.chat.id, "🏠 منوی اصلی 👇", reply_markup=markup)
+
+
+def show_main_menu_by_id(chat_id):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("🛍 محصولات", "💬 پشتیبانی")
+    markup.row("📞 تماس با ما", "📱 واتساپ")
+    markup.row("📸 اینستاگرام", "🌐 سایت")
+    bot.send_message(chat_id, "🏠 منوی اصلی 👇", reply_markup=markup)
+
+
+def show_products_menu(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("🧱 دیوارپوش فومی پشت چسبدار")
+    markup.row("🏠 دیوارپوش فومی رولی")
+    markup.row("🪵 ترمووال")
+    markup.row("⬜ کفپوش")
+    markup.row("📐 قرنیز")
+    markup.row("🖼 ابزار قاب بندی")
+    markup.row("🪨 لمسه پشت چسبدار")
+    markup.row("🔙 بازگشت")
+    bot.send_message(message.chat.id, "دسته‌بندی محصولات 👇", reply_markup=markup)
+
+
+def show_foam_menu(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("🧱 آجر کلاسیک", "🧱 آجر بهمنی")
+    markup.row("🔶 چهار پر", "🟫 آجر تخت")
+    markup.row("🏛 آجر آنتیک", "🩶 طرح بتن")
+    markup.row("🌿 ترمو فوم", "🪨 سنگ آنتیک")
+    markup.row("💠 لوزی", "🎋 بامبو")
+    markup.row("💎 کریستال", "⬛ مربع")
+    markup.row("✨ هشت پر")
+    markup.row("🔙 بازگشت به محصولات")
+    bot.send_message(message.chat.id, "🧱 دیوارپوش فومی 👇", reply_markup=markup)
+
+
+
 def inquiry_button(product_name):
     markup = types.InlineKeyboardMarkup()
     markup.row(
