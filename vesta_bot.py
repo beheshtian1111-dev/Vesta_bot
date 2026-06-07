@@ -1,4 +1,3 @@
-cat > /mnt/user-data/outputs/vesta_bot/vesta_bot.py << 'ENDOFFILE'
 import telebot
 from telebot import types
 import threading
@@ -625,5 +624,3 @@ def instagram(message):
 
 
 bot.infinity_polling()
-ENDOFFILE
-echo "Done"
