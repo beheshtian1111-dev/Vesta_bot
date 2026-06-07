@@ -61,16 +61,7 @@ def handle_inquiry(call):
     markup = types.InlineKeyboardMarkup()
     markup.row(types.InlineKeyboardButton("🔙 بازگشت به منو", callback_data="back_to_main"))
     bot.send_message(
-        call.message.chat.id,
-        f"📋 *استعلام موجودی — {product}*
-
-"
-        f"برای دریافت اطلاعات موجودی این محصول
-"
-        f"به پشتیبانی پیام بدید:
-
-"
-        f"👤 {ADMIN_SUPPORT}",
+        "📋 *استعلام موجودی — " + product + "*\n\nبرای دریافت اطلاعات موجودی این محصول\nبه پشتیبانی پیام بدید:\n\n👤 " + ADMIN_SUPPORT,
         parse_mode="Markdown",
         reply_markup=markup
     )
@@ -85,20 +76,8 @@ def handle_order(call):
         pass
     markup = types.InlineKeyboardMarkup()
     markup.row(types.InlineKeyboardButton("🔙 بازگشت به منو", callback_data="back_to_main"))
-    bot.send_message(
-        call.message.chat.id,
-        f"🛒 *ثبت سفارش — {product}*
-
-"
-        f"برای ثبت سفارش این محصول
-"
-        f"به پشتیبانی پیام بدید:
-
-"
-        f"👤 {ADMIN_SUPPORT}",
-        parse_mode="Markdown",
-        reply_markup=markup
-    )
+    text = "🛒 *ثبت سفارش — " + product + "*\n\nبرای ثبت سفارش این محصول\nبه پشتیبانی پیام بدید:\n\n👤 " + ADMIN_SUPPORT
+    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
 
 
 @bot.callback_query_handler(func=lambda call: call.data == "back_to_main")
