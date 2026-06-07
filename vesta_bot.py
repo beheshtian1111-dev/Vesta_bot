@@ -1,7 +1,10 @@
 import telebot
 from telebot import types
-import threading
-from flask import Flask
+from flask import Flask, request
+
+TOKEN = "8521280831:AAGnbbW-ikeJPb8338w8cDO4SgSksS2TmzY"
+bot = telebot.TeleBot(TOKEN)
+WEBHOOK_URL = "https://vesta-bot-9d18.onrender.com/" + TOKEN
 
 app = Flask(__name__)
 
@@ -9,13 +12,12 @@ app = Flask(__name__)
 def health():
     return 'OK'
 
-def run_flask():
-    app.run(host='0.0.0.0', port=8080)
-
-threading.Thread(target=run_flask).start()
-
-TOKEN = "8521280831:AAGnbbW-ikeJPb8338w8cDO4SgSksS2TmzY"
-bot = telebot.TeleBot(TOKEN)
+@app.route('/' + TOKEN, methods=['POST'])
+def webhook():
+    json_str = request.get_data().decode('UTF-8')
+    update = telebot.types.Update.de_json(json_str)
+    bot.process_new_updates([update])
+    return 'OK'
 
 CHANNEL = "https://t.me/Diivarpoosh"
 CHANNEL_ID = "@Diivarpoosh"
@@ -513,4 +515,8 @@ def instagram(message):
     bot.send_message(message.chat.id, f"📸 اینستاگرام:\n{INSTAGRAM}")
 
 
-bot.infinity_polling()
+bot.remove_webhook()
+bot.set_webhook(url=WEBHOOK_URL)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8080)
