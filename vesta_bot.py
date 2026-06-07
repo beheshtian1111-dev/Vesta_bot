@@ -41,6 +41,7 @@ def get_file_id(message):
         bot.send_message(message.chat.id, f"FILE ID:\n\n`{file_id}`", parse_mode="Markdown")
 
 
+
 def inquiry_button(product_name):
     markup = types.InlineKeyboardMarkup()
     markup.row(
@@ -50,57 +51,6 @@ def inquiry_button(product_name):
     return markup
 
 
-def show_main_menu(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("🛍 محصولات", "💬 پشتیبانی")
-    markup.row("📞 تماس با ما", "📱 واتساپ")
-    markup.row("📸 اینستاگرام", "🌐 سایت")
-    bot.send_message(message.chat.id, "🏠 منوی اصلی 👇", reply_markup=markup)
-
-
-def show_main_menu_by_id(chat_id):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("🛍 محصولات", "💬 پشتیبانی")
-    markup.row("📞 تماس با ما", "📱 واتساپ")
-    markup.row("📸 اینستاگرام", "🌐 سایت")
-    bot.send_message(chat_id, "🏠 منوی اصلی 👇", reply_markup=markup)
-
-
-def show_products_menu(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("🧱 دیوارپوش فومی پشت چسبدار")
-    markup.row("🏠 دیوارپوش فومی رولی")
-    markup.row("🪵 ترمووال")
-    markup.row("⬜ کفپوش")
-    markup.row("📐 قرنیز")
-    markup.row("🖼 ابزار قاب بندی")
-    markup.row("🪨 لمسه پشت چسبدار")
-    markup.row("🔙 بازگشت")
-    bot.send_message(message.chat.id, "دسته‌بندی محصولات 👇", reply_markup=markup)
-
-
-def show_foam_menu(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("🧱 آجر کلاسیک", "🧱 آجر بهمنی")
-    markup.row("🔶 چهار پر", "🟫 آجر تخت")
-    markup.row("🏛 آجر آنتیک", "🩶 طرح بتن")
-    markup.row("🌿 ترمو فوم", "🪨 سنگ آنتیک")
-    markup.row("💠 لوزی", "🎋 بامبو")
-    markup.row("💎 کریستال", "⬛ مربع")
-    markup.row("✨ هشت پر")
-    markup.row("🔙 بازگشت به محصولات")
-    bot.send_message(message.chat.id, "🧱 دیوارپوش فومی 👇", reply_markup=markup)
-
-
-def send_photos(chat_id, file_ids, caption, product_name):
-    for i, fid in enumerate(file_ids):
-        if i == len(file_ids) - 1:
-            bot.send_photo(chat_id, fid, caption=caption, reply_markup=inquiry_button(product_name))
-        else:
-            bot.send_photo(chat_id, fid, caption=caption)
-
-
-# ===== استعلام موجودی =====
 @bot.callback_query_handler(func=lambda call: call.data.startswith("inquiry_"))
 def handle_inquiry(call):
     product = call.data.replace("inquiry_", "")
@@ -108,56 +58,24 @@ def handle_inquiry(call):
         bot.answer_callback_query(call.id)
     except:
         pass
-    msg = bot.send_message(
-        call.message.chat.id,
-        f"📋 *استعلام موجودی — {product}*\n\n"
-        f"لطفاً اطلاعات زیر را در یک پیام بنویسید:\n\n"
-        f"🏷 نام محصول: {product}\n"
-        f"🎨 رنگ مورد نظر: ؟\n"
-        f"📦 تعداد یا متراژ: ؟\n\n"
-        f"مثال:\n"
-        f"رنگ: سفید\n"
-        f"تعداد: ۵۰ عدد",
-        parse_mode="Markdown",
-        reply_markup=types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-            types.KeyboardButton("🔙 بازگشت به منو")
-        )
-    )
-    bot.register_next_step_handler(msg, inquiry_step, product)
-
-
-def inquiry_step(message, product):
-    if message.text == "🔙 بازگشت به منو":
-        show_main_menu(message)
-        return
-    username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {message.from_user.id}"
-    user_id = message.from_user.id
-    admin_text = (
-        f"📋 *استعلام موجودی جدید*\n\n"
-        f"🏷 محصول: {product}\n"
-        f"📝 اطلاعات:\n{message.text}\n\n"
-        f"👤 از: {username}\n"
-        f"🆔 آیدی: `{user_id}`"
-    )
     markup = types.InlineKeyboardMarkup()
-    markup.row(
-        types.InlineKeyboardButton("✅ موجود است", callback_data=f"avail_{user_id}"),
-        types.InlineKeyboardButton("❌ ناموجود است", callback_data=f"unavail_{user_id}")
+    markup.row(types.InlineKeyboardButton("🔙 بازگشت به منو", callback_data="back_to_main"))
+    bot.send_message(
+        call.message.chat.id,
+        f"📋 *استعلام موجودی — {product}*
+
+"
+        f"برای دریافت اطلاعات موجودی این محصول
+"
+        f"به پشتیبانی پیام بدید:
+
+"
+        f"👤 {ADMIN_SUPPORT}",
+        parse_mode="Markdown",
+        reply_markup=markup
     )
-    admin_sent = False
-    try:
-        bot.send_message(ADMIN_ID, admin_text, parse_mode="Markdown", reply_markup=markup)
-        admin_sent = True
-    except Exception as e:
-        print(f"Error: {e}")
-    if admin_sent:
-        bot.send_message(message.chat.id, "✅ استعلام ثبت شد!\nمنتظر پاسخ پشتیبانی باشید 🙏")
-    else:
-        bot.send_message(message.chat.id, "❌ خطا. با پشتیبانی تماس بگیرید:\n" + ADMIN_SUPPORT)
-    show_main_menu(message)
 
 
-# ===== ثبت سفارش =====
 @bot.callback_query_handler(func=lambda call: call.data.startswith("order_"))
 def handle_order(call):
     product = call.data.replace("order_", "")
@@ -165,89 +83,31 @@ def handle_order(call):
         bot.answer_callback_query(call.id)
     except:
         pass
-    msg = bot.send_message(
-        call.message.chat.id,
-        f"🛒 *ثبت سفارش — {product}*\n\n"
-        f"لطفاً اطلاعات زیر را در یک پیام بنویسید:\n\n"
-        f"🏷 نام محصول: {product}\n"
-        f"🎨 رنگ مورد نظر: ؟\n"
-        f"📦 تعداد یا متراژ: ؟\n\n"
-        f"مثال:\n"
-        f"رنگ: سفید\n"
-        f"تعداد: ۵۰ عدد",
-        parse_mode="Markdown",
-        reply_markup=types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-            types.KeyboardButton("🔙 بازگشت به منو")
-        )
-    )
-    bot.register_next_step_handler(msg, order_product_step, product)
-
-
-def order_product_step(message, product):
-    if message.text == "🔙 بازگشت به منو":
-        show_main_menu(message)
-        return
-    order_info = message.text
-    msg = bot.send_message(message.chat.id, "📝 نام و نام خانوادگی:")
-    bot.register_next_step_handler(msg, order_name_step, product, order_info)
-
-
-def order_name_step(message, product, order_info):
-    if message.text == "🔙 بازگشت به منو":
-        show_main_menu(message)
-        return
-    msg = bot.send_message(message.chat.id, "📞 شماره تماس:")
-    bot.register_next_step_handler(msg, order_phone_step, product, order_info, message.text)
-
-
-def order_phone_step(message, product, order_info, name):
-    if message.text == "🔙 بازگشت به منو":
-        show_main_menu(message)
-        return
-    msg = bot.send_message(message.chat.id, "📍 آدرس کامل:")
-    bot.register_next_step_handler(msg, order_address_step, product, order_info, name, message.text)
-
-
-def order_address_step(message, product, order_info, name, phone):
-    if message.text == "🔙 بازگشت به منو":
-        show_main_menu(message)
-        return
-    username = f"@{message.from_user.username}" if message.from_user.username else f"کاربر {message.from_user.id}"
-    order_text = (
-        f"🛒 *سفارش جدید*\n\n"
-        f"🏷 محصول: {product}\n"
-        f"📝 مشخصات: {order_info}\n\n"
-        f"👤 نام: {name}\n"
-        f"📞 تماس: {phone}\n"
-        f"📍 آدرس: {message.text}\n"
-        f"👤 یوزرنیم: {username}"
-    )
-    try:
-        bot.send_message(ADMIN_ID, order_text, parse_mode="Markdown")
-    except Exception as e:
-        print(f"Error: {e}")
+    markup = types.InlineKeyboardMarkup()
+    markup.row(types.InlineKeyboardButton("🔙 بازگشت به منو", callback_data="back_to_main"))
     bot.send_message(
-        message.chat.id,
-        "✅ *سفارش شما ثبت شد!*\n\nبه زودی با شما تماس گرفته میشود.\nبرای پیگیری:\n" + ADMIN_SUPPORT,
-        parse_mode="Markdown"
+        call.message.chat.id,
+        f"🛒 *ثبت سفارش — {product}*
+
+"
+        f"برای ثبت سفارش این محصول
+"
+        f"به پشتیبانی پیام بدید:
+
+"
+        f"👤 {ADMIN_SUPPORT}",
+        parse_mode="Markdown",
+        reply_markup=markup
     )
-    show_main_menu(message)
 
 
-# ===== پاسخ ادمین به استعلام =====
-@bot.callback_query_handler(func=lambda call: call.data.startswith("avail_") or call.data.startswith("unavail_"))
-def handle_admin_response(call):
-    user_id = int(call.data.split("_")[1])
+@bot.callback_query_handler(func=lambda call: call.data == "back_to_main")
+def back_to_main_callback(call):
     try:
-        if call.data.startswith("avail_"):
-            bot.send_message(user_id, "✅ محصول مورد نظر *موجود* است!\nبرای ثبت سفارش:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
-            bot.answer_callback_query(call.id, "پاسخ موجود ارسال شد ✅")
-        else:
-            bot.send_message(user_id, "❌ محصول مورد نظر *ناموجود* است.\nبرای اطلاعات بیشتر:\n" + ADMIN_SUPPORT, parse_mode="Markdown")
-            bot.answer_callback_query(call.id, "پاسخ ناموجود ارسال شد ❌")
-        bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
-    except Exception as e:
-        bot.answer_callback_query(call.id, "❌ خطا در ارسال پیام")
+        bot.answer_callback_query(call.id)
+    except:
+        pass
+    show_main_menu_by_id(call.message.chat.id)
 
 
 # ===== START =====
@@ -255,7 +115,15 @@ def handle_admin_response(call):
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.row("📢 عضویت در کانال", "✅ عضو شدم")
-    bot.send_message(message.chat.id, "برای ورود باید عضو کانال باشی 👇", reply_markup=markup)
+    bot.send_message(
+        message.chat.id,
+        "✨ *به وستا دکور خوش اومدی!*\n\n"
+        "🏠 ما در وستا دکور بهترین محصولات دیوارپوش، کفپوش و دکوراسیون رو با کیفیت بالا و قیمت مناسب ارائه میدیم.\n\n"
+        "🎨 از طرح‌های متنوع آجر، بتن، چوب و سنگ گرفته تا ترمووال و کفپوش — همه چیز در یک جا!\n\n"
+        "📲 برای ورود به فروشگاه، اول باید عضو کانال ما بشی 👇",
+        parse_mode="Markdown",
+        reply_markup=markup
+    )
 
 
 @bot.message_handler(func=lambda m: m.text == "📢 عضویت در کانال")
@@ -491,7 +359,7 @@ def mdf50(message):
         "AgACAgQAAxkBAAIC6mogaFQetEXGT-vDNAqwXi_5SSd4AAKXD2sbhIIAAVHKUmUEdxBwXAEAAwIAA3kAAzsE",
         "AgACAgQAAxkBAAIC7GogaFR-jtE6yFCnq5pNIEzOaOsTAAKZD2sbhIIAAVFjiDY-LokqaQEAAwIAA3kAAzsE",
         "AgACAgQAAxkBAAIC7WogaFQ8XyIodtWoOBmJcBlI-bK1AAKaD2sbhIIAAVF2XX-dWGMzBQEAAwIAA3kAAzsE",
-    ], "🪵 ترمووال MDF 50cm\n📐 ابعاد: عرض ۵۰ سانت × ارتفاع ۲۸۰ سانت", "ترمووال MDF 50cm")
+    ], "🪵 ترمووال MDF 50cm\n📐 ابعاد: عرض ۵۰ سانت × ارتفاع ۲۸۰ سانت\n💰 قیمت پنلی: ۱.۶۰۰ تومان", "ترمووال MDF 50cm")
 
 
 @bot.message_handler(func=lambda m: m.text == "⬜ کفپوش")
