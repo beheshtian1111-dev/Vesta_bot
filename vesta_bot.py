@@ -34,14 +34,6 @@ def is_member(user_id):
         return False
 
 
-@bot.message_handler(content_types=['photo'])
-def get_file_id(message):
-    if message.from_user.id in ADMIN_IDS:
-        file_id = message.photo[-1].file_id
-        bot.send_message(message.chat.id, f"FILE ID:\n\n`{file_id}`", parse_mode="Markdown")
-
-
-
 def show_main_menu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.row("🛍 محصولات", "💬 پشتیبانی")
@@ -84,47 +76,66 @@ def show_foam_menu(message):
     bot.send_message(message.chat.id, "🧱 دیوارپوش فومی 👇", reply_markup=markup)
 
 
-
 def inquiry_button(product_name):
     markup = types.InlineKeyboardMarkup()
     markup.row(
-        types.InlineKeyboardButton("📋 استعلام موجودی", callback_data=f"inquiry_{product_name}"),
-        types.InlineKeyboardButton("🛒 ثبت سفارش", callback_data=f"order_{product_name}")
+        types.InlineKeyboardButton("📋 استعلام موجودی", callback_data="inq_" + product_name[:30]),
+        types.InlineKeyboardButton("🛒 ثبت سفارش", callback_data="ord_" + product_name[:30])
     )
     return markup
 
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith("inquiry_"))
+def send_photos(chat_id, file_ids, caption, product_name):
+    for i, fid in enumerate(file_ids):
+        if i == len(file_ids) - 1:
+            bot.send_photo(chat_id, fid, caption=caption, reply_markup=inquiry_button(product_name))
+        else:
+            bot.send_photo(chat_id, fid, caption=caption)
+
+
+@bot.message_handler(content_types=['photo'])
+def get_file_id(message):
+    if message.from_user.id in ADMIN_IDS:
+        file_id = message.photo[-1].file_id
+        bot.send_message(message.chat.id, "FILE ID:\n\n`" + file_id + "`", parse_mode="Markdown")
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("inq_"))
 def handle_inquiry(call):
-    product = call.data.replace("inquiry_", "")
+    product = call.data[4:]
     try:
         bot.answer_callback_query(call.id)
     except:
         pass
     markup = types.InlineKeyboardMarkup()
-    markup.row(types.InlineKeyboardButton("🔙 بازگشت به منو", callback_data="back_to_main"))
+    markup.row(types.InlineKeyboardButton("🔙 بازگشت به منو", callback_data="back_main"))
     bot.send_message(
-        "📋 *استعلام موجودی — " + product + "*\n\nبرای دریافت اطلاعات موجودی این محصول\nبه پشتیبانی پیام بدید:\n\n👤 " + ADMIN_SUPPORT,
+        call.message.chat.id,
+        "📋 *استعلام موجودی — " + product + "*\n\nبرای دریافت اطلاعات موجودی\nبه پشتیبانی پیام بدید:\n\n👤 " + ADMIN_SUPPORT,
         parse_mode="Markdown",
         reply_markup=markup
     )
 
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith("order_"))
+@bot.callback_query_handler(func=lambda call: call.data.startswith("ord_"))
 def handle_order(call):
-    product = call.data.replace("order_", "")
+    product = call.data[4:]
     try:
         bot.answer_callback_query(call.id)
     except:
         pass
     markup = types.InlineKeyboardMarkup()
-    markup.row(types.InlineKeyboardButton("🔙 بازگشت به منو", callback_data="back_to_main"))
-    text = "🛒 *ثبت سفارش — " + product + "*\n\nبرای ثبت سفارش این محصول\nبه پشتیبانی پیام بدید:\n\n👤 " + ADMIN_SUPPORT
-    bot.send_message(call.message.chat.id, text, parse_mode="Markdown", reply_markup=markup)
+    markup.row(types.InlineKeyboardButton("🔙 بازگشت به منو", callback_data="back_main"))
+    bot.send_message(
+        call.message.chat.id,
+        "🛒 *ثبت سفارش — " + product + "*\n\nبرای ثبت سفارش\nبه پشتیبانی پیام بدید:\n\n👤 " + ADMIN_SUPPORT,
+        parse_mode="Markdown",
+        reply_markup=markup
+    )
 
 
-@bot.callback_query_handler(func=lambda call: call.data == "back_to_main")
-def back_to_main_callback(call):
+@bot.callback_query_handler(func=lambda call: call.data == "back_main")
+def back_main(call):
     try:
         bot.answer_callback_query(call.id)
     except:
@@ -132,7 +143,6 @@ def back_to_main_callback(call):
     show_main_menu_by_id(call.message.chat.id)
 
 
-# ===== START =====
 @bot.message_handler(commands=['start'])
 def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -443,7 +453,7 @@ def qarniz(message):
 
 
 @bot.message_handler(func=lambda m: m.text == "🖼 ابزار قاب بندی")
-def abzar_ghabbandi(message):
+def abzar(message):
     file_ids = [
         "AgACAgQAAxkBAAIGeGoikNm8HnELftYwnuNqN2lgKq1HAAJWD2sbqCgZUVyYMkRApZ0QAQADAgADeQADOwQ",
         "AgACAgQAAxkBAAIGeWoikNldvo-pPBcIRLfkflr3VrlcAAJXD2sbqCgZUUILtVr6oeVLAQADAgADeQADOwQ",
@@ -472,14 +482,8 @@ def lamse(message):
     ], "🪨 لمسه پشت چسبدار\n📐 ابعاد: ۴۷ × ۴۷ سانتی‌متر\n💰 قیمت تایلی: ۲۷۰ تومان", "لمسه پشت چسبدار")
 
 
-# ===== BACK =====
 @bot.message_handler(func=lambda m: m.text == "🔙 بازگشت")
 def back(message):
-    show_main_menu(message)
-
-
-@bot.message_handler(func=lambda m: m.text == "🔙 بازگشت به منو")
-def back_to_menu(message):
     show_main_menu(message)
 
 
@@ -488,29 +492,29 @@ def back_products(message):
     show_products_menu(message)
 
 
+@bot.message_handler(func=lambda m: m.text == "💬 پشتیبانی")
+def support(message):
+    bot.send_message(message.chat.id, "💬 پشتیبانی:\n" + ADMIN_SUPPORT)
+
+
 @bot.message_handler(func=lambda m: m.text == "📞 تماس با ما")
 def contact(message):
     bot.send_message(message.chat.id, "📞 09120646909\n📞 09370072236")
 
 
-@bot.message_handler(func=lambda m: m.text == "💬 پشتیبانی")
-def support(message):
-    bot.send_message(message.chat.id, ADMIN_SUPPORT)
+@bot.message_handler(func=lambda m: m.text == "📱 واتساپ")
+def whatsapp(message):
+    bot.send_message(message.chat.id, "📱 واتساپ:\n" + WHATSAPP)
+
+
+@bot.message_handler(func=lambda m: m.text == "📸 اینستاگرام")
+def instagram(message):
+    bot.send_message(message.chat.id, "📸 اینستاگرام:\n" + INSTAGRAM)
 
 
 @bot.message_handler(func=lambda m: m.text == "🌐 سایت")
 def site(message):
     bot.send_message(message.chat.id, "🌐 https://vestadeccor.com")
-
-
-@bot.message_handler(func=lambda m: m.text == "📱 واتساپ")
-def whatsapp(message):
-    bot.send_message(message.chat.id, f"📱 واتساپ:\n{WHATSAPP}")
-
-
-@bot.message_handler(func=lambda m: m.text == "📸 اینستاگرام")
-def instagram(message):
-    bot.send_message(message.chat.id, f"📸 اینستاگرام:\n{INSTAGRAM}")
 
 
 bot.remove_webhook()
