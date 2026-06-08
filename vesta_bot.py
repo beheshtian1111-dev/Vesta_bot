@@ -77,20 +77,13 @@ def show_foam_menu(message):
 
 
 def inquiry_button(product_name):
-    markup = types.InlineKeyboardMarkup()
-    markup.row(
-        types.InlineKeyboardButton("📋 استعلام موجودی", callback_data="inq_" + product_name[:30]),
-        types.InlineKeyboardButton("🛒 ثبت سفارش", callback_data="ord_" + product_name[:30])
-    )
-    return markup
+    return None
 
 
 def send_photos(chat_id, file_ids, caption, product_name):
-    for i, fid in enumerate(file_ids):
-        if i == len(file_ids) - 1:
-            bot.send_photo(chat_id, fid, caption=caption, reply_markup=inquiry_button(product_name))
-        else:
-            bot.send_photo(chat_id, fid, caption=caption)
+    full_caption = caption + "\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT
+    for fid in file_ids:
+        bot.send_photo(chat_id, fid, caption=full_caption)
 
 
 @bot.message_handler(content_types=['photo'])
@@ -499,7 +492,15 @@ def support(message):
 
 @bot.message_handler(func=lambda m: m.text == "📞 تماس با ما")
 def contact(message):
-    bot.send_message(message.chat.id, "📞 09120646909\n📞 09370072236")
+    bot.send_message(message.chat.id,
+        "📞 *تماس با ما*\n\n"
+        "📱 09120646909\n"
+        "📱 09370072236\n"
+        "☎️ 02155278487\n"
+        "☎️ 02155278488\n\n"
+        "📍 تهران، بزرگراه آیت الله سعیدی، چهاردانگه، خیابان کریمی، میدان شهدا، وستا دکور",
+        parse_mode="Markdown"
+    )
 
 
 @bot.message_handler(func=lambda m: m.text == "📱 واتساپ")
