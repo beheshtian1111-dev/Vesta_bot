@@ -84,6 +84,9 @@ def send_photos(chat_id, file_ids, caption, product_name):
     full_caption = caption + "\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT
     for fid in file_ids:
         bot.send_photo(chat_id, fid, caption=full_caption)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("🔙 بازگشت به محصولات", "🏠 منوی اصلی")
+    bot.send_message(chat_id, "👆 عکس‌های محصول", reply_markup=markup)
 
 
 @bot.message_handler(content_types=['photo'])
@@ -477,6 +480,11 @@ def lamse(message):
 
 @bot.message_handler(func=lambda m: m.text == "🔙 بازگشت")
 def back(message):
+    show_main_menu(message)
+
+
+@bot.message_handler(func=lambda m: m.text == "🏠 منوی اصلی")
+def main_menu(message):
     show_main_menu(message)
 
 
