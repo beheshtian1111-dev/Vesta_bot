@@ -58,7 +58,7 @@ def show_products_menu(message):
     markup.row("⬜ کفپوش")
     markup.row("📐 قرنیز")
     markup.row("🖼 ابزار قاب بندی")
-    markup.row("🪨 لمسه پشت چسبدار")
+    markup.row("🟣 لمسه پشت چسبدار")
     markup.row("🪨 ماربل شیت")
     markup.row("🔙 بازگشت")
     bot.send_message(message.chat.id, "دسته‌بندی محصولات 👇", reply_markup=markup)
@@ -81,8 +81,10 @@ def inquiry_button(product_name):
     return None
 
 
-def send_photos(chat_id, file_ids, caption, product_name):
+def send_photos(chat_id, file_ids, caption, product_name, link=None):
     full_caption = caption + "\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT
+    if link:
+        full_caption += "\n\n🛒 خرید مستقیم:\n" + link
     for fid in file_ids:
         bot.send_photo(chat_id, fid, caption=full_caption)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -192,7 +194,7 @@ def ajor_classic(message):
         "AgACAgQAAxkBAAIBt2ogSJh9QuvOnVimlpkePTbVzwpuAAKDDmsbM2wBUVxpI3_uLIExAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIBuGogSJhpGn6xvis1n_lesIKXGFzEAAKEDmsbM2wBUU3hYCWybzGjAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIBuWogSJpl1wx8XzeJY3OojoZiSoiIAAKFDmsbM2wBUXBOmrY2OY_WAQADAgADeAADOwQ",
-    ], "🧱 آجر کلاسیک\n📐 ابعاد: ۷۰ × ۷۷ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "آجر کلاسیک")
+    ], "🧱 آجر کلاسیک\n📐 ابعاد: ۷۰ × ۷۷ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "آجر کلاسیک", "https://vestadeccor.com/product/foam-wall-covering-classic-brick-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🧱 آجر بهمنی")
@@ -207,7 +209,7 @@ def ajor_bahmani(message):
         "AgACAgQAAxkBAAIB9GogUUxoekNmDTpL07BGMHcGCmmGAAKdDmsbM2wBUTve2EbWu3-2AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIB9WogUUxWYEPOMk0EoolZen5yez61AAKeDmsbM2wBUc2Tv5uQnSYUAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIB9mogUUwUtyRaIm0thnAqI2V-1ksgAAKfDmsbM2wBURRQeAiiSA-hAQADAgADeAADOwQ",
-    ], "🧱 آجر بهمنی\n📐 ابعاد: ۷۰ × ۷۷ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "آجر بهمنی")
+    ], "🧱 آجر بهمنی\n📐 ابعاد: ۷۰ × ۷۷ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "آجر بهمنی", "https://vestadeccor.com/product/foam-wall-covering-bahmani-brick-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🔶 چهار پر")
@@ -222,7 +224,7 @@ def char_par(message):
         "AgACAgQAAxkBAAIE3WohbjNexPlsJYGEum3XwKpgBbjHAAI-Dmsb2rYQUQJuPEPZqvO7AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE3mohbjMRR-cWeDGq-qkXc2YK_eL5AAI_Dmsb2rYQUXpWFeitNxkCAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE32ohbjO-yMM9dTglXWI1Ket1cuKWAAJADmsb2rYQUZttRzKqpvjNAQADAgADeAADOwQ",
-    ], "🔶 چهار پر\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "چهار پر")
+    ], "🔶 چهار پر\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "چهار پر", "https://vestadeccor.com/product/foam-wall-covering-char-par-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🟫 آجر تخت")
@@ -233,7 +235,7 @@ def ajor_takht(message):
         "AgACAgQAAxkBAAIE62ohcmcxkjELMomCp-49EnXNnWXnAAJIDmsb2rYQUU9Y_pn_tOnWAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE7GohcmdsGOhN2XVtdK2RmzgCbHgLAAJJDmsb2rYQUcyN1hfeZycUAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE7WohcmcElA9lRYV-F-GLwaXdmtdHAAJKDmsb2rYQUZB4ctjJjGQ4AQADAgADeAADOwQ",
-    ], "🟫 آجر تخت\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "آجر تخت")
+    ], "🟫 آجر تخت\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "آجر تخت", "https://vestadeccor.com/product/foam-wall-covering-flat-brick-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🏛 آجر آنتیک")
@@ -242,7 +244,7 @@ def ajor_antique(message):
         "AgACAgQAAxkBAAIE9GohcozW62nAdfU50ISIwFDIhOgoAAJMDmsb2rYQUd_QFAQ0m02YAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE82ohcoyUuHUz8EpDNgLkG9za2hzJAAJLDmsb2rYQUQQ8rv-QD-G-AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE9Wohcoynx5pInTxsA-IRtjmN4LMRAAJNDmsb2rYQUaKqqTyXXgABcAEAAwIAA3gAAzsE",
-    ], "🏛 آجر آنتیک\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "آجر آنتیک")
+    ], "🏛 آجر آنتیک\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "آجر آنتیک", "https://vestadeccor.com/product/foam-wall-covering-antique-brick-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🩶 طرح بتن")
@@ -252,7 +254,7 @@ def beton(message):
         "AgACAgQAAxkBAAIE-mohcr2hqn5VUMPnqdGHxIPtIfJNAAJPDmsb2rYQUYbN9GKJo3vSAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE-2ohcr3mw-ptAAG8mMHSm9O-Z1lfNgACUA5rG9q2EFGJeDty70dZYwEAAwIAA3gAAzsE",
         "AgACAgQAAxkBAAIE_Gohcr3bkC0LhWMYqnHWJn2AI0WDAAJRDmsb2rYQUYAs3r_C9qpFAQADAgADeAADOwQ",
-    ], "🩶 طرح بتن\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "طرح بتن")
+    ], "🩶 طرح بتن\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "طرح بتن", "https://vestadeccor.com/product/%d8%af%db%8c%d9%88%d8%a7%d8%b1%d9%be%d9%88%d8%b4-%d9%81%d9%88%d9%85%db%8c-%d8%b7%d8%b1%d8%ad-%d8%a8%d8%aa%d9%86/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🌿 ترمو فوم")
@@ -263,7 +265,7 @@ def termo_foam(message):
         "AgACAgQAAxkBAAIFDGohcv5LwEGDjziFtSdquJHvaSK4AAJUDmsb2rYQUfbPZscKxRA1AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFDWohcv7WvBk3vAh0yjjrzSy41QpjAAJVDmsb2rYQUYDKAhh3WZS4AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFDmohcv7Ic7cR1Fza_e1jJjXQLqioAAJWDmsb2rYQUVG-Uo8eL2WfAQADAgADeAADOwQ",
-    ], "🌿 ترمو فوم\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "ترمو فوم")
+    ], "🌿 ترمو فوم\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "ترمو فوم", "https://vestadeccor.com/product/foam-wall-covering-termo-foam-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🪨 سنگ آنتیک")
@@ -272,7 +274,7 @@ def sang_antique(message):
         "AgACAgQAAxkBAAIFFWohcxc5c2heSPLil6zSpH19VDZdAAJYDmsb2rYQUXuJ2MTE0HZAAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFFGohcxfqL3fTHqI2bDYmF2o6RMiRAAJXDmsb2rYQUXOLl--qclFWAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFFmohcxcMaH4s7Hd00NVxghTZfE-XAAJZDmsb2rYQUb-9o7DzKrSTAQADAgADeAADOwQ",
-    ], "🪨 سنگ آنتیک\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "سنگ آنتیک")
+    ], "🪨 سنگ آنتیک\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "سنگ آنتیک", "https://vestadeccor.com/product/foam-wall-covering-concrete-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "💠 لوزی")
@@ -281,7 +283,7 @@ def lozi(message):
         "AgACAgQAAxkBAAIFHWohczGfsBtYh8wEZuGGheVB7lrwAAJaDmsb2rYQUXFk75-0ZeN5AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFHmohczEcFp9rzQMBunZ2bC5Czn6TAAJbDmsb2rYQUS9mimGJDu97AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFH2ohczGEVGW0zpYm_0xkgrM-wBlCAAJcDmsb2rYQUdlwf7banIKYAQADAgADeAADOwQ",
-    ], "💠 لوزی\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "لوزی")
+    ], "💠 لوزی\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "لوزی", "https://vestadeccor.com/product/foam-wall-covering-diamond-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🎋 بامبو")
@@ -295,7 +297,7 @@ def bambo(message):
         "AgACAgQAAxkBAAIHo2okG6YBIVL3jzyqwk-mSXDghZzCAAKID2sb4dwgUW5jFj0OgLidAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIHpGokG6aZtwwdkcXQ4LKN-rsAAQJ7iAACiQ9rG-HcIFEhPoXebtYTLwEAAwIAA3gAAzsE",
         "AgACAgQAAxkBAAIHpWokG6Zu3ussijLqAQEIcSUDtlJzAAKKD2sb4dwgUVoK5m_sH4WYAQADAgADeAADOwQ",
-    ], "🎋 بامبو\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "بامبو")
+    ], "🎋 بامبو\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "بامبو", "https://vestadeccor.com/product/foam-wall-covering-bambo-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "💎 کریستال")
@@ -309,7 +311,7 @@ def crystal(message):
         "AgACAgQAAxkBAAIHumokHIE-2Lhvj8sEzwABdCTkKc8vagACkQ9rG-HcIFGqmNBU7_f6iQEAAwIAA3gAAzsE",
         "AgACAgQAAxkBAAIHu2okHIG4Oci-ho78civDRR5NekuBAAKSD2sb4dwgUStBzF7lusAnAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIHvGokHIFVTiEwX2jptFCkRYVwuLOHAAKTD2sb4dwgUfsKcxVMMVLnAQADAgADeAADOwQ",
-    ], "💎 کریستال\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "کریستال")
+    ], "💎 کریستال\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "کریستال", "https://vestadeccor.com/product/foam-wall-covering-crystal-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "⬛ مربع")
@@ -324,7 +326,7 @@ def moraba(message):
         "AgACAgQAAxkBAAIHy2okHOUub8kKKfWCnKGYL_Y3N5HpAAKaD2sb4dwgUUyddTOHF5glAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIHzGokHOXgL4huP-l6ixE9BzbJPGQ8AAKbD2sb4dwgUf4eXiazL8fLAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIHzWokHOWe-cgDtZeXnCfHhHIXuncsAAKcD2sb4dwgUTPtyjecrrMYAQADAgADeAADOwQ",
-    ], "⬛ مربع\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "مربع")
+    ], "⬛ مربع\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "مربع", "https://vestadeccor.com/product/foam-wall-cover-grid-square-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "✨ هشت پر")
@@ -341,7 +343,7 @@ def hasht_par(message):
         "AgACAgQAAxkBAAIH4WokHRtVcjZ3Yk9GG70ORf7F_X7xAAKlD2sb4dwgUej8pouYdUUvAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIH4mokHRtR2doYsc3invsDh_0wRh7hAAKmD2sb4dwgUfhYyCOzuvHWAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIH42okHRy29B_TaALWORgSkTlhChBxAAKnD2sb4dwgUTC0lzrR2KrrAQADAgADeAADOwQ",
-    ], "✨ هشت پر\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰ تومان", "هشت پر")
+    ], "✨ هشت پر\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "هشت پر", "https://vestadeccor.com/product/foam-wall-covering-hashtpar-shape/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🏠 دیوارپوش فومی رولی")
@@ -358,7 +360,7 @@ def foam_roll(message):
         "AgACAgQAAxkBAAIKR2osWDC0QlUiAAHbu3FFbgNMv8nR3wAC1gxrG_07aFFFJrV5r9vx8wEAAwIAA3gAAzwE",
         "AgACAgQAAxkBAAIKSGosWDASQeHmNFJh4VNMsdvEClAWAALXDGsb_TtoUbTkhbE_j5EmAQADAgADeAADPAQ",
         "AgACAgQAAxkBAAIKSWosWDOW1gXrh1XWXzUz8UZOrJUDAALYDGsb_TtoUacpVM2DnznnAQADAgADeAADPAQ",
-    ], "🏠 دیوارپوش فومی رولی\n📐 ابعاد: ۷۰ × ۲۸۰ سانتی‌متر\n💰 قیمت: ۱.۰۰۰.۰۰۰ تومان", "دیوارپوش فومی رولی")
+    ], "🏠 دیوارپوش فومی رولی\n📐 ابعاد: ۷۰ × ۲۸۰ سانتی‌متر\n💰 قیمت: ۱.۰۰۰.۰۰۰ تومان", "دیوارپوش فومی رولی", "https://vestadeccor.com/product-category/wallcovering/foam-roll-wall-covering/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🪵 ترمووال")
@@ -384,7 +386,7 @@ def pvc20(message):
         "AgACAgQAAxkBAAICkWogZJIG_HdGlOUAAfn6fXs8Der4JgACkA9rG4SCAAFRCAGBHbgPilcBAAMCAAN5AAM7BA",
         "AgACAgQAAxkBAAICkmogZJJzttqdxDCJyoIaMB6wynvjAAKRD2sbhIIAAVEdLBY8Sptx3QEAAwIAA3kAAzsE",
         "AgACAgQAAxkBAAICk2ogZJIg2Ez3vNlbzHaLVjnooOK7AAKSD2sbhIIAAVHnDgh2yjUXwgEAAwIAA3kAAzsE",
-    ], "🪵 ترمووال PVC 20cm\n📐 ابعاد: عرض ۲۰ سانت × ارتفاع ۲۸۰ سانت\n💰 قیمت: ۶۲۰ تومان", "ترمووال PVC 20cm")
+    ], "🪵 ترمووال PVC 20cm\n📐 ابعاد: عرض ۲۰ سانت × ارتفاع ۲۸۰ سانت\n💰 قیمت: ۶۵۰.۰۰۰ تومان", "ترمووال PVC 20cm", "https://vestadeccor.com/product-category/thermowall/pvc-thermowall/")
 
 
 @bot.message_handler(func=lambda m: m.text == "MDF 50cm")
@@ -398,7 +400,7 @@ def mdf50(message):
         "AgACAgQAAxkBAAIC6mogaFQetEXGT-vDNAqwXi_5SSd4AAKXD2sbhIIAAVHKUmUEdxBwXAEAAwIAA3kAAzsE",
         "AgACAgQAAxkBAAIC7GogaFR-jtE6yFCnq5pNIEzOaOsTAAKZD2sbhIIAAVFjiDY-LokqaQEAAwIAA3kAAzsE",
         "AgACAgQAAxkBAAIC7WogaFQ8XyIodtWoOBmJcBlI-bK1AAKaD2sbhIIAAVF2XX-dWGMzBQEAAwIAA3kAAzsE",
-    ], "🪵 ترمووال MDF 50cm\n📐 ابعاد: عرض ۵۰ سانت × ارتفاع ۲۸۰ سانت\n💰 قیمت پنلی: ۱.۶۰۰ تومان", "ترمووال MDF 50cm")
+    ], "🪵 ترمووال MDF 50cm\n📐 ابعاد: عرض ۵۰ سانت × ارتفاع ۲۸۰ سانت\n💰 قیمت پنلی: ۱.۶۰۰.۰۰۰ تومان", "ترمووال MDF 50cm", "https://vestadeccor.com/product-category/thermowall/iranian-coated-thermopanel/")
 
 
 @bot.message_handler(func=lambda m: m.text == "⬜ کفپوش")
@@ -425,7 +427,7 @@ def stone_floor(message):
         "AgACAgQAAxkBAAICPmogXTL8ZGGK1hVRjfxSbAckP8w6AALHDmsbM2wBUdQkd7BIk-bYAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAICP2ogXTKpo_hadsKGb-gR8jrHQneEAALIDmsbM2wBUSyORIDaCw2NAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAICQGogXTIBgaumDOP2i358PaxZWZktAALJDmsbM2wBUaJSGh46_eyDAQADAgADeAADOwQ",
-    ], "⬜ کفپوش طرح سنگ\n📐 ابعاد: ۶۰ × ۶۰ سانتی‌متر\n💰 قیمت ورقی: ۴۴۰ تومان", "کفپوش طرح سنگ")
+    ], "⬜ کفپوش طرح سنگ\n📐 ابعاد: ۶۰ × ۶۰ سانتی‌متر\n💰 قیمت ورقی: ۳۷۰.۰۰۰ تومان", "کفپوش طرح سنگ", "https://vestadeccor.com/product-category/flooring/glue-free-stone-design-flooring/")
 
 
 @bot.message_handler(func=lambda m: m.text == "طرح پارکت")
@@ -443,7 +445,7 @@ def parquet_floor(message):
         "AgACAgQAAxkBAAIDzWoggUYygyvsKG5GjDD34iWlx6ZqAALiD2sbhIIAAVG2INX-onDUJAEAAwIAA3gAAzsE",
         "AgACAgQAAxkBAAIDz2oggUbR5M0syN0xgREr3tm1MOhbAALkD2sbhIIAAVGEWtG9YsA2VQEAAwIAA3gAAzsE",
         "AgACAgQAAxkBAAID0GoggUbR3BiYCX2II_82nxTsYJARAALlD2sbhIIAAVH-YOnIP4QNJAEAAwIAA3gAAzsE",
-    ], "⬜ کفپوش طرح پارکت\n📏 متراژ هر کارتن: ۳ متر و ۶۰ سانتی‌متر\n💰 قیمت هر کارتن: ۳.۹۶۰ تومان", "کفپوش طرح پارکت")
+    ], "⬜ کفپوش طرح پارکت\n📏 متراژ هر کارتن: ۳ متر و ۶۰ سانتی‌متر\n💰 قیمت هر کارتن: ۳.۴۶۰.۰۰۰ تومان", "کفپوش طرح پارکت", "https://vestadeccor.com/product-category/flooring/parquet-flooring-without-glue/")
 
 
 @bot.message_handler(func=lambda m: m.text == "📐 قرنیز")
@@ -456,7 +458,7 @@ def qarniz(message):
         "AgACAgQAAxkBAAIFJ2ohejEMUcWhX2W3_0zuE4xfze3XAAJ3Dmsb2rYQUUcG6jMT3NdEAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFKGohejHroYKiOiD7gok4sIzzS8ZdAAJ4Dmsb2rYQUdB71qyEVqsVAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFKWohejFKGMbubnLi2m0gyWF2dqPiAAJ5Dmsb2rYQUaj1DcqRb94cAQADAgADeAADOwQ",
-    ], "📐 قرنیز\n📐 ابعاد: ۹ سانت × ۲۸۰ سانت\n💰 قیمت: ۲۶۰ تومان", "قرنیز")
+    ], "📐 قرنیز\n📐 ابعاد: ۹ سانت × ۲۸۰ سانت\n💰 قیمت: ۲۶۰.۰۰۰ تومان", "قرنیز", "https://vestadeccor.com/product-category/cornice/simple-pvc-skirting-board/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🖼 ابزار قاب بندی")
@@ -468,12 +470,13 @@ def abzar(message):
         "AgACAgQAAxkBAAIGe2oikNlAnQqIp1K2M1AwgBrOGHqhAAJZD2sbqCgZUc8slXbEF70wAQADAgADeQADOwQ",
         "AgACAgQAAxkBAAIGfGoikNk849zVNNhAHPnIC7iXkmgXAAJaD2sbqCgZUViZqGBWmMTCAQADAgADeQADOwQ",
         "AgACAgQAAxkBAAIGfWoikNkFKIha_5YyPxRyrykbQBx-AAJbD2sbqCgZUeMwjhdhjozRAQADAgADeQADOwQ",
+        "AgACAgQAAxkBAAILQWos8dWtg9p03AGRv7Cp2RTVZ2wYAAIHDWsbNvVoUUHnQhcWMWf5AQADAgADeAADPAQ",
     ]
     for fid in file_ids:
         bot.send_photo(message.chat.id, fid)
 
 
-@bot.message_handler(func=lambda m: m.text == "🪨 لمسه پشت چسبدار")
+@bot.message_handler(func=lambda m: m.text == "🟣 لمسه پشت چسبدار")
 def lamse(message):
     send_photos(message.chat.id, [
         "AgACAgQAAxkBAAIHc2oj844GN6B6Mqxqgm4cni_6aEJkAAJND2sb4dwgUSU0Ps9m3sstAQADAgADeQADOwQ",
@@ -486,7 +489,7 @@ def lamse(message):
         "AgACAgQAAxkBAAIHemoj844kzHIIYM5wRQ_UXGwzydAfAAJUD2sb4dwgUcVP99BfX_5GAQADAgADeQADOwQ",
         "AgACAgQAAxkBAAIHe2oj847_Um4TQDFUu7GkbcVsRVgBAAJVD2sb4dwgUUoS8cDyWJypAQADAgADeQADOwQ",
         "AgACAgQAAxkBAAIHfGoj847Pj4Viez9Cm-P_Isu8UqCOAAJWD2sb4dwgUf_VRcbUSyYMAQADAgADeQADOwQ",
-    ], "🪨 لمسه پشت چسبدار\n📐 ابعاد: ۴۷ × ۴۷ سانتی‌متر\n💰 قیمت تایلی: ۲۷۰ تومان", "لمسه پشت چسبدار")
+    ], "🟣 لمسه پشت چسبدار (مخملی)\n📐 ابعاد: ۴۷ × ۴۷ سانتی‌متر\n💰 قیمت تایلی: ۲۷۰.۰۰۰ تومان", "لمسه پشت چسبدار", "https://vestadeccor.com/product-category/wallcovering/adhesive-backed-tactile-wallcovering/")
 
 
 @bot.message_handler(func=lambda m: m.text == "🪨 ماربل شیت")
@@ -546,9 +549,11 @@ def marble_sheet(message):
         "AgACAgQAAxkBAAIKsWosZzdDBDb81M0KrIiVw-NVJ5aUAAIhDWsb_TtoUVlP7iYlJOFYAQADAgADeQADPAQ",
     ]
 
-    caption1 = "🪨 ماربل شیت\n📐 سایز ۶۰ × ۱۲۰: هر ورق ۸۵۰.۰۰۰ تومان\n📐 سایز ۱۲۰ × ۲۸۰: هر ورق ۳.۳۵۰.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT
-    caption2 = "🪨 ماربل شیت\n📐 سایز ۶۰ × ۱۲۰: هر ورق ۷۲۰.۰۰۰ تومان\n📐 سایز ۱۲۰ × ۲۸۰: هر ورق ۳.۱۰۰.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT
-    caption3 = "🪨 ماربل شیت\n📐 سایز ۶۰ × ۱۲۰: هر ورق ۷۰۰.۰۰۰ تومان\n📐 سایز ۱۲۰ × ۲۸۰: هر ورق ۳.۰۰۰.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT
+    marble_links = "\n\n🛒 خرید مستقیم ورق ۶۰×۱۲۰:\nhttps://vestadeccor.com/product-category/wallcovering/marblesheet-wallcovering/\n🛒 خرید مستقیم ورق ۱۲۰×۲۸۰:\nhttps://vestadeccor.com/product-category/wallcovering/marblesheet-wallcovering122280/"
+
+    caption1 = "🪨 ماربل شیت\n📐 سایز ۶۰ × ۱۲۰: هر ورق ۸۵۰.۰۰۰ تومان\n📐 سایز ۱۲۰ × ۲۸۰: هر ورق ۳.۳۵۰.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT + marble_links
+    caption2 = "🪨 ماربل شیت\n📐 سایز ۶۰ × ۱۲۰: هر ورق ۷۲۰.۰۰۰ تومان\n📐 سایز ۱۲۰ × ۲۸۰: هر ورق ۳.۱۰۰.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT + marble_links
+    caption3 = "🪨 ماربل شیت\n📐 سایز ۶۰ × ۱۲۰: هر ورق ۷۰۰.۰۰۰ تومان\n📐 سایز ۱۲۰ × ۲۸۰: هر ورق ۳.۰۰۰.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT + marble_links
 
     for fid in group1:
         bot.send_photo(message.chat.id, fid, caption=caption1)
