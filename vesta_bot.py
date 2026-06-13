@@ -59,6 +59,7 @@ def show_products_menu(message):
     markup.row("📐 قرنیز")
     markup.row("🖼 ابزار قاب بندی")
     markup.row("🪨 لمسه پشت چسبدار")
+    markup.row("🪨 ماربل شیت")
     markup.row("🔙 بازگشت")
     bot.send_message(message.chat.id, "دسته‌بندی محصولات 👇", reply_markup=markup)
 
@@ -345,9 +346,19 @@ def hasht_par(message):
 
 @bot.message_handler(func=lambda m: m.text == "🏠 دیوارپوش فومی رولی")
 def foam_roll(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    markup.row("🔙 بازگشت به محصولات")
-    bot.send_message(message.chat.id, "🏠 دیوارپوش فومی رولی\nبرای اطلاعات بیشتر با پشتیبانی تماس بگیر.\n" + ADMIN_SUPPORT, reply_markup=markup)
+    send_photos(message.chat.id, [
+        "AgACAgQAAxkBAAIKQGosWDB-eOnMTWb-vcXaDdyCkwEgAALODGsb_TtoUdGD86TYz4ShAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKP2osWDCt8kmoJTf-Rc2gGS9JA77YAALNDGsb_TtoUVc1bdNUSpH5AQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKQWosWDByPc9tZ2CIvFotRJDKs5BXAALPDGsb_TtoUWsb8U7GXlH5AQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKQmosWDCnyUna7A01iOrf5PhcW0zSAALRDGsb_TtoUSn_Rj3u9uisAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKQ2osWDBs8al2WNZByON5Ac-4VxnbAALSDGsb_TtoUfif4rg6SI7oAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKRGosWDAq_txRoSWvV3Y7m1Xgd7pbAALTDGsb_TtoURkY-xZJLucAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKRWosWDBSq7NIhAABIQxaUhFIShynHAAC1AxrG_07aFGYOrVIb1JrrwEAAwIAA3gAAzwE",
+        "AgACAgQAAxkBAAIKRmosWDCGEAMwnhSiQMl4av2wO0icAALVDGsb_TtoUdcEuXvrzht0AQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKR2osWDC0QlUiAAHbu3FFbgNMv8nR3wAC1gxrG_07aFFFJrV5r9vx8wEAAwIAA3gAAzwE",
+        "AgACAgQAAxkBAAIKSGosWDASQeHmNFJh4VNMsdvEClAWAALXDGsb_TtoUbTkhbE_j5EmAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKSWosWDOW1gXrh1XWXzUz8UZOrJUDAALYDGsb_TtoUacpVM2DnznnAQADAgADeAADPAQ",
+    ], "🏠 دیوارپوش فومی رولی\n📐 ابعاد: ۷۰ × ۲۸۰ سانتی‌متر\n💰 قیمت: ۱.۰۰۰.۰۰۰ تومان", "دیوارپوش فومی رولی")
 
 
 @bot.message_handler(func=lambda m: m.text == "🪵 ترمووال")
@@ -476,6 +487,79 @@ def lamse(message):
         "AgACAgQAAxkBAAIHe2oj847_Um4TQDFUu7GkbcVsRVgBAAJVD2sb4dwgUUoS8cDyWJypAQADAgADeQADOwQ",
         "AgACAgQAAxkBAAIHfGoj847Pj4Viez9Cm-P_Isu8UqCOAAJWD2sb4dwgUf_VRcbUSyYMAQADAgADeQADOwQ",
     ], "🪨 لمسه پشت چسبدار\n📐 ابعاد: ۴۷ × ۴۷ سانتی‌متر\n💰 قیمت تایلی: ۲۷۰ تومان", "لمسه پشت چسبدار")
+
+
+@bot.message_handler(func=lambda m: m.text == "🪨 ماربل شیت")
+def marble_sheet(message):
+    group1 = [
+        "AgACAgQAAxkBAAIKVmosYIEk3c_8oG2EFom3Wzcx-aj6AALhDGsb_TtoUccwcVLQLq-sAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKVWosYIFfLwlgiyk3bLnzwOSbvLW_AALgDGsb_TtoUfZkvWk9f-XiAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKV2osYIHbqOGH2Hm1mkiptp5eoXn-AALiDGsb_TtoUaLGtBtB2WjFAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKWGosYIE-dl9D7pqg1g8MEJRmvtyxAALjDGsb_TtoUUn0RdeB_MCwAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKWWosYIGE1tRxKZc9usZejbqXa7TgAALkDGsb_TtoUVH5nhMpseTGAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKWmosYIGgxxlavfdQPj-8pXSo5ETSAALlDGsb_TtoUU1Hh1OzImWaAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKW2osYIHUJvxKTjkDWVAiLW4vc7x-AALmDGsb_TtoUUngzEHic8m_AQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKXGosYIED42Xv1rzR7Yb8VfK3r68EAALnDGsb_TtoUVhxFNdyKYliAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKXWosYIHAR8FyWqA9IKICq2EaLtc1AALoDGsb_TtoUfo1fFGGCo0qAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKaGosYVm74acPjbkybnkh6Ni6ViifAALrDGsb_TtoUV79sswaJzWGAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKZ2osYVkLRBu-glJNdoi96XEQkSv1AALqDGsb_TtoUea5Uyg0VxfnAQADAgADeQADPAQ",
+    ]
+    group2 = [
+        "AgACAgQAAxkBAAIKbGosY3LonkoBN7_QuZbB0rQN6uGkAAL2DGsb_TtoUQ9C0a1VxhKGAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKbWosY3JNLdsxLg-h-nhEUIJpImB7AAL3DGsb_TtoUeRYsONiB8ABAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKa2osY3Loo-OyJsH6oKzTYIMGPxhDAAL1DGsb_TtoUdpY2hqTLeh-AQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKbmosY3IZCBcwSD9o1lNzZoqXmuvmAAL5DGsb_TtoUU7DTR1yPmk1AQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKb2osY3J_7-oKSC6vDveWUwABgV5Z8wAC-AxrG_07aFGRDP9iDSsG5wEAAwIAA3gAAzwE",
+        "AgACAgQAAxkBAAIKcGosY3Km-lPFtnKbsTbqEGYPPTgfAAL6DGsb_TtoUaJNHlNQ90RoAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKcWosY3LQxkvedDLDTJKWsEqyS_K1AAL7DGsb_TtoUYgoPl5vBKpVAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKcmosY3Kgi8BxlBMea52bKT-PCODlAAL8DGsb_TtoUcz0OibPbfjQAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKc2osY3LJm6DpsznM4XFabRVifllfAAL9DGsb_TtoUbNGhf91G_FIAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKdGosY3ICJ65jnvvazjMoHSohyW7VAAL-DGsb_TtoUb5QzWTRxrD8AQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKf2osY3XAevkecl1uuXK9UwIgHJ4sAAL_DGsb_TtoUWWkfTEPvmbmAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKgGosY3V9VHMkna-BXFhaCU3Ycv-TAAMNaxv9O2hRDu2crJ8nqF8BAAMCAAN4AAM8BA",
+        "AgACAgQAAxkBAAIKgWosY3UV9wkBpBQQ1wQZ23biIBLOAAIEDWsb_TtoUR4-l66ErXCWAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKgmosY3Uy4yYUi0bs4-vuZJpEWCTLAAICDWsb_TtoUVRPIJTTSH2eAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKg2osY3UayM2bbaiCzT7IK8FDUlWiAAIBDWsb_TtoUX2GXusbZcncAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKhGosY3W5m5CRbqKBGbROp9lKgk-bAAIDDWsb_TtoUYwnk7C6woqmAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKi2osY-212lAcM9YfvYw59tT6TKiyAAIHDWsb_TtoUf9H--clLMkbAQADAgADeQADPAQ",
+    ]
+    group3 = [
+        "AgACAgQAAxkBAAIKjmosZX_01AeOlTOJVHUyDUCHkyGfAAILDWsb_TtoUaMdXSFv6-vnAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKjWosZX-fh_iuX2o7Lw83t4bTbJ73AAIKDWsb_TtoUTdRf7lR-Q4AAQEAAwIAA3gAAzwE",
+        "AgACAgQAAxkBAAIKj2osZX_oqPmBS1BYnjrXLmZBo3MsAAIMDWsb_TtoUTFYMPi6gG87AQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKkGosZX96PT2KrS9rMFxBYZm7-gbaAAINDWsb_TtoUTivn1WHa-ybAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKkWosZX9SjQGGyXOK143mjCudToTMAAIODWsb_TtoUSDOepsxaDOeAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKkmosZX8ShDQtmwbFB1Y2St0USSRqAAIPDWsb_TtoUZEmzSf6PcNoAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKk2osZX-d62L-Kq6yotCCdfD53Z2ZAAIQDWsb_TtoUWGeKIjr9UnzAQADAgADeAADPAQ",
+        "AgACAgQAAxkBAAIKnGosZzJv0F_6i2mQfa1vgbo7sJfJAAIWDWsb_TtoUQiolbAJJvmcAQADAgADeQADPAQ",
+        "AgACAgQAAxkBAAIKm2osZzILiTm0Ic3SB3mxYpzwPIF6AAIVDWsb_TtoUYn7LMT-vRrfAQADAgADeQADPAQ",
+        "AgACAgQAAxkBAAIKnWosZzLr765SAbqRnmEIa0SlHM-mAAIXDWsb_TtoUW7DAgNxrtrvAQADAgADeQADPAQ",
+        "AgACAgQAAxkBAAIKnmosZzJHj5Sj1i_uZW9Jx6EFqmeaAAIYDWsb_TtoUYjCLihY5EKqAQADAgADeQADPAQ",
+        "AgACAgQAAxkBAAIKn2osZzLhZU5TX8evafSJ7n96zmQwAAIZDWsb_TtoUUwqxQhhGa7WAQADAgADeQADPAQ",
+        "AgACAgQAAxkBAAIKoGosZzKf_bI02bKRurO5YucziblDAAIaDWsb_TtoUeeGpa9iasKDAQADAgADeQADPAQ",
+        "AgACAgQAAxkBAAIKoWosZzK1PITt3VmNuELKvGAyz8BFAAIbDWsb_TtoURkEZ7O0_9vaAQADAgADdwADPAQ",
+        "AgACAgQAAxkBAAIKomosZzJNmSjpRid4ept5sAb9vchTAAIcDWsb_TtoUYjHqv_8LiGWAQADAgADdwADPAQ",
+        "AgACAgQAAxkBAAIKo2osZzJVI_C5YwzFn03KBi_PUSASAAIdDWsb_TtoUYpiraL0FRLIAQADAgADeQADPAQ",
+        "AgACAgQAAxkBAAIKpGosZzLkfY2zuhIfYwcz4aoSd2EuAAIeDWsb_TtoUSKLBEovZkylAQADAgADdwADPAQ",
+        "AgACAgQAAxkBAAIKr2osZzdYvhRkEdSJG4e6UqcKzTT3AAIfDWsb_TtoURhsLtPARpc6AQADAgADeQADPAQ",
+        "AgACAgQAAxkBAAIKsGosZzcPleiJ0LKTeDMKSy7CnAc1AAIgDWsb_TtoUUlz_L51DwmSAQADAgADeQADPAQ",
+        "AgACAgQAAxkBAAIKsWosZzdDBDb81M0KrIiVw-NVJ5aUAAIhDWsb_TtoUVlP7iYlJOFYAQADAgADeQADPAQ",
+    ]
+
+    caption1 = "🪨 ماربل شیت\n📐 سایز ۶۰ × ۱۲۰: هر ورق ۸۵۰.۰۰۰ تومان\n📐 سایز ۱۲۰ × ۲۸۰: هر ورق ۳.۳۵۰.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT
+    caption2 = "🪨 ماربل شیت\n📐 سایز ۶۰ × ۱۲۰: هر ورق ۷۲۰.۰۰۰ تومان\n📐 سایز ۱۲۰ × ۲۸۰: هر ورق ۳.۱۰۰.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT
+    caption3 = "🪨 ماربل شیت\n📐 سایز ۶۰ × ۱۲۰: هر ورق ۷۰۰.۰۰۰ تومان\n📐 سایز ۱۲۰ × ۲۸۰: هر ورق ۳.۰۰۰.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT
+
+    for fid in group1:
+        bot.send_photo(message.chat.id, fid, caption=caption1)
+    for fid in group2:
+        bot.send_photo(message.chat.id, fid, caption=caption2)
+    for fid in group3:
+        bot.send_photo(message.chat.id, fid, caption=caption3)
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("🔙 بازگشت به محصولات", "🏠 منوی اصلی")
+    bot.send_message(message.chat.id, "👆 عکس‌های ماربل شیت", reply_markup=markup)
 
 
 @bot.message_handler(func=lambda m: m.text == "🔙 بازگشت")
