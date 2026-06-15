@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: vesta-bot
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python vesta_bot.py & python vesta_bale_bot.py
-    numInstances: 1
