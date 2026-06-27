@@ -3,7 +3,7 @@ from telebot import types
 import threading
 from flask import Flask
 
-TOKEN = "8521280831:AAG88ButFxFoi4Vc5YtDcUPAFTw4K77LfvY"
+TOKEN = "8521280831:AAESd0hqkaoHazBV-9LC85z-69hxKDMBxDs"
 bot = telebot.TeleBot(TOKEN)
 
 app = Flask(__name__)
@@ -613,6 +613,28 @@ def instagram(message):
 @bot.message_handler(func=lambda m: m.text == "🌐 سایت")
 def site(message):
     bot.send_message(message.chat.id, "🌐 https://vestadeccor.com")
+
+
+# ابزار ادمین: شناسایی عکس از file_id
+waiting_for_file_id = set()
+
+@bot.message_handler(commands=['getphoto'])
+def getphoto_cmd(message):
+    if message.from_user.id not in ADMIN_IDS:
+        return
+    waiting_for_file_id.add(message.chat.id)
+    bot.send_message(message.chat.id, "📎 file_id رو بفرست تا عکسش رو نشون بدم:")
+
+@bot.message_handler(func=lambda m: m.chat.id in waiting_for_file_id and m.content_type == 'text')
+def show_photo_by_id(message):
+    if message.chat.id not in waiting_for_file_id:
+        return
+    waiting_for_file_id.discard(message.chat.id)
+    file_id = message.text.strip()
+    try:
+        bot.send_photo(message.chat.id, file_id, caption="✅ عکس مربوط به این file_id")
+    except Exception as e:
+        bot.send_message(message.chat.id, f"❌ خطا: {e}")
 
 
 bot.remove_webhook()
