@@ -249,23 +249,38 @@ def ajor_antique(message):
 
 @bot.message_handler(func=lambda m: m.text == "🩶 طرح بتن")
 def beton(message):
-    send_photos(message.chat.id, [
+    caption_365 = "🩶 طرح بتن\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۶۵.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT + "\n\n🛒 خرید مستقیم:\nhttps://vestadeccor.com/product/%d8%af%db%8c%d9%88%d8%a7%d8%b1%d9%be%d9%88%d8%b4-%d9%81%d9%88%d9%85%db%8c-%d8%b7%d8%b1%d8%ad-%d8%a8%d8%aa%d9%86/"
+    caption_380 = "🩶 طرح بتن\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT + "\n\n🛒 خرید مستقیم:\nhttps://vestadeccor.com/product/%d8%af%db%8c%d9%88%d8%a7%d8%b1%d9%be%d9%88%d8%b4-%d9%81%d9%88%d9%85%db%8c-%d8%b7%d8%b1%d8%ad-%d8%a8%d8%aa%d9%86/"
+    for fid in [
         "AgACAgQAAxkBAAIE-Wohcr38QB-sokNFECGLL0V9YYU3AAJODmsb2rYQUciRAYQ9fyMlAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE-mohcr2hqn5VUMPnqdGHxIPtIfJNAAJPDmsb2rYQUYbN9GKJo3vSAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIE-2ohcr3mw-ptAAG8mMHSm9O-Z1lfNgACUA5rG9q2EFGJeDty70dZYwEAAwIAA3gAAzsE",
-        "AgACAgQAAxkBAAIE_Gohcr3bkC0LhWMYqnHWJn2AI0WDAAJRDmsb2rYQUYAs3r_C9qpFAQADAgADeAADOwQ",
-    ], "🩶 طرح بتن\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان", "طرح بتن", "https://vestadeccor.com/product/%d8%af%db%8c%d9%88%d8%a7%d8%b1%d9%be%d9%88%d8%b4-%d9%81%d9%88%d9%85%db%8c-%d8%b7%d8%b1%d8%ad-%d8%a8%d8%aa%d9%86/")
+    ]:
+        bot.send_photo(message.chat.id, fid, caption=caption_365)
+    bot.send_photo(message.chat.id, "AgACAgQAAxkBAAIE_Gohcr3bkC0LhWMYqnHWJn2AI0WDAAJRDmsb2rYQUYAs3r_C9qpFAQADAgADeAADOwQ", caption=caption_380)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("🔙 بازگشت به محصولات", "🏠 منوی اصلی")
+    bot.send_message(message.chat.id, "👆 عکس‌های محصول", reply_markup=markup)
 
 
 @bot.message_handler(func=lambda m: m.text == "🌿 ترمو فوم")
 def termo_foam(message):
-    send_photos(message.chat.id, [
+    caption_365 = "🌿 ترمو فوم\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۶۵.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT + "\n\n🛒 خرید مستقیم:\nhttps://vestadeccor.com/product/foam-wall-covering-termo-foam-shape/"
+    caption_380 = "🌿 ترمو فوم\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۸۰.۰۰۰ تومان\n\n📋 استعلام موجودی و ثبت سفارش:\n👤 " + ADMIN_SUPPORT + "\n\n🛒 خرید مستقیم:\nhttps://vestadeccor.com/product/foam-wall-covering-termo-foam-shape/"
+    for fid in [
         "AgACAgQAAxkBAAIFC2ohcv7ZtloacYVD-RqX9Dk7UrI_AAJTDmsb2rYQUdmvAmXlKX3zAQADAgADeAADOwQ",
-        "AgACAgQAAxkBAAIFCmohcv7KLHbOMuYS8lYNo7oQ-jGkAAJSDmsb2rYQUUaOrajgklhBAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFDGohcv5LwEGDjziFtSdquJHvaSK4AAJUDmsb2rYQUfbPZscKxRA1AQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFDWohcv7WvBk3vAh0yjjrzSy41QpjAAJVDmsb2rYQUYDKAhh3WZS4AQADAgADeAADOwQ",
+    ]:
+        bot.send_photo(message.chat.id, fid, caption=caption_365)
+    for fid in [
+        "AgACAgQAAxkBAAIFCmohcv7KLHbOMuYS8lYNo7oQ-jGkAAJSDmsb2rYQUUaOrajgklhBAQADAgADeAADOwQ",
         "AgACAgQAAxkBAAIFDmohcv7Ic7cR1Fza_e1jJjXQLqioAAJWDmsb2rYQUVG-Uo8eL2WfAQADAgADeAADOwQ",
-    ], "🌿 ترمو فوم\n📐 ابعاد: ۷۰ × ۷۰ سانتی‌متر\n💰 قیمت تایلی: ۳۶۵.۰۰۰ تومان", "ترمو فوم", "https://vestadeccor.com/product/foam-wall-covering-termo-foam-shape/")
+    ]:
+        bot.send_photo(message.chat.id, fid, caption=caption_380)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup.row("🔙 بازگشت به محصولات", "🏠 منوی اصلی")
+    bot.send_message(message.chat.id, "👆 عکس‌های محصول", reply_markup=markup)
 
 
 @bot.message_handler(func=lambda m: m.text == "🪨 سنگ آنتیک")
