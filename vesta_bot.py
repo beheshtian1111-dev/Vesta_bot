@@ -653,6 +653,7 @@ def show_photo_by_id(message):
         bot.send_photo(message.chat.id, file_id, caption="✅ عکس مربوط به این file_id")
     except Exception as e:
         bot.send_message(message.chat.id, f"❌ خطا: {e}")
+
 @bot.message_handler(content_types=['new_chat_members'])
 def welcome_new_member(message):
     for member in message.new_chat_members:
