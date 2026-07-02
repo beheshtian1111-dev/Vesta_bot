@@ -671,6 +671,35 @@ def welcome_new_member(message):
             message_thread_id=message.message_thread_id
         )
 
+ALLOWED_LINKS = [
+    "t.me/Diivarpoosh",
+    "t.me/vestadecor_support",
+    "vestadeccor.com",
+    "t.me/Vestadecorbot"
+]
+
+@bot.message_handler(
+    content_types=['text'],
+    func=lambda m: m.chat.type in ['group', 'supergroup']
+        and m.text
+        and ('http' in m.text or 't.me' in m.text)
+)
+def delete_links(message):
+    if message.from_user.id in ADMIN_IDS:
+        return
+    for allowed in ALLOWED_LINKS:
+        if allowed.lower() in message.text.lower():
+            return
+    try:
+        bot.delete_message(message.chat.id, message.message_id)
+        bot.send_message(
+            message.chat.id,
+            f"⚠️ {message.from_user.first_name} عزیز، ارسال لینک در گروه مجاز نیست.",
+            message_thread_id=message.message_thread_id
+        )
+    except:
+        pass
+
 
 bot.remove_webhook()
 bot.infinity_polling()
