@@ -5,6 +5,7 @@ from flask import Flask
 
 import os
 TOKEN = os.environ.get("BOT_TOKEN")
+GROUP_ID = -1003786165878
 
 bot = telebot.TeleBot(TOKEN)
 
