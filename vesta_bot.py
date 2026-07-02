@@ -653,6 +653,22 @@ def show_photo_by_id(message):
         bot.send_photo(message.chat.id, file_id, caption="✅ عکس مربوط به این file_id")
     except Exception as e:
         bot.send_message(message.chat.id, f"❌ خطا: {e}")
+@bot.message_handler(content_types=['new_chat_members'])
+def welcome_new_member(message):
+    for member in message.new_chat_members:
+        if member.is_bot:
+            continue
+        name = member.first_name or "عزیز"
+        bot.send_message(
+            message.chat.id,
+            f"👋 {name} عزیز، به گروه وستا دکور خوش اومدی!\n\n"
+            "📌 راهنما:\n"
+            "• سوال و مشاوره 👉 همین تاپیک\n"
+            "• مشاهده محصولات و قیمت 👉 تاپیک کاتالوگ\n"
+            "• ثبت سفارش 👉 به بات پیام بده\n\n"
+            "🤖 @Vestadecorbot",
+            message_thread_id=message.message_thread_id
+        )
 
 
 bot.remove_webhook()
