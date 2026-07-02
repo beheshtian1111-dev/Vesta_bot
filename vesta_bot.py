@@ -3,7 +3,9 @@ from telebot import types
 import threading
 from flask import Flask
 
-TOKEN = "8521280831:AAGbFeoOL3iAqK_JHcn3s0nUYUsuzujLTHo"
+TOKEN = import os
+TOKEN = os.environ.get("BOT_TOKEN")
+
 bot = telebot.TeleBot(TOKEN)
 
 app = Flask(__name__)
