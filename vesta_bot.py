@@ -689,6 +689,9 @@ def delete_links(message):
     except:
         pass
 
+@bot.message_handler(func=lambda m: True)
+def debug_all(message):
+    print(f"MSG: chat={message.chat.id} thread={message.message_thread_id} text={message.text}")
 
 
 bot.remove_webhook()
