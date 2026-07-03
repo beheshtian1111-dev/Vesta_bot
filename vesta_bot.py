@@ -2,8 +2,8 @@ import telebot
 from telebot import types
 import threading
 from flask import Flask
-
 import os
+
 TOKEN = os.environ.get("BOT_TOKEN")
 GROUP_ID = -1003786165878
 
@@ -27,6 +27,13 @@ ADMIN_ID = 7333037232
 ADMIN_IDS = [7333037232]
 WHATSAPP = "https://wa.me/989120646909"
 INSTAGRAM = "https://www.instagram.com/divar.posh?igsh=b2ZlbmkycGU3M2Rj&utm_source=qr"
+
+ALLOWED_LINKS = [
+    "t.me/diivarpoosh",
+    "t.me/vestadecor_support",
+    "vestadeccor.com",
+    "t.me/vestadecorbot"
+]
 
 
 def is_member(user_id):
@@ -147,6 +154,8 @@ def back_main(call):
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    if message.chat.type in ['group', 'supergroup']:
+        return
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     markup.row("📢 عضویت در کانال", "✅ عضو شدم")
     bot.send_message(
@@ -633,7 +642,7 @@ def site(message):
     bot.send_message(message.chat.id, "🌐 https://vestadeccor.com")
 
 
-# ابزار ادمین: شناسایی عکس از file_id
+# ابزار ادمین
 waiting_for_file_id = set()
 
 @bot.message_handler(commands=['getphoto'])
@@ -654,30 +663,8 @@ def show_photo_by_id(message):
     except Exception as e:
         bot.send_message(message.chat.id, f"❌ خطا: {e}")
 
-@bot.message_handler(content_types=['new_chat_members'])
-def welcome_new_member(message):
-    for member in message.new_chat_members:
-        if member.is_bot:
-            continue
-        name = member.first_name or "عزیز"
-        bot.send_message(
-            message.chat.id,
-            f"👋 {name} عزیز، به گروه وستا دکور خوش اومدی!\n\n"
-            "📌 راهنما:\n"
-            "• سوال و مشاوره 👉 همین تاپیک\n"
-            "• مشاهده محصولات و قیمت 👉 تاپیک کاتالوگ\n"
-            "• ثبت سفارش 👉 به بات پیام بده\n\n"
-            "🤖 @Vestadecorbot",
-            message_thread_id=message.message_thread_id
-        )
 
-ALLOWED_LINKS = [
-    "t.me/Diivarpoosh",
-    "t.me/vestadecor_support",
-    "vestadeccor.com",
-    "t.me/Vestadecorbot"
-]
-
+# حذف لینک‌های غیرمجاز در گروه
 @bot.message_handler(
     func=lambda m: (
         m.chat.type in ['group', 'supergroup'] and
@@ -700,7 +687,6 @@ def delete_links(message):
         )
     except:
         pass
-
 
 
 bot.remove_webhook()
