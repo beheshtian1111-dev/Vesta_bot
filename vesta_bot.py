@@ -669,6 +669,7 @@ def show_photo_by_id(message):
     func=lambda m: (
         m.chat.type in ['group', 'supergroup'] and
         m.text is not None and
+        m.message_thread_id == 4 and
         ('http' in m.text or 't.me' in m.text)
     )
 )
@@ -687,6 +688,7 @@ def delete_links(message):
         )
     except:
         pass
+
 
 
 bot.remove_webhook()
