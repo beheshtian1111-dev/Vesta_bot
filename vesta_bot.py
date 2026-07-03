@@ -690,4 +690,4 @@ def delete_links(message):
 
 
 bot.remove_webhook()
-bot.infinity_polling()
+bot.infinity_polling(allowed_updates=["message", "callback_query"])
