@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>تقسیم‌گر درآمد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0a18;
+    --bg2:#141026;
+    --card:#191430;
+    --card2:#1f1938;
+    --violet:#8b5cf6;
+    --violet2:#a78bfa;
+    --emerald:#10b981;
+    --amber:#f59e0b;
+    --pink:#ec4899;
+    --sky:#38bdf8;
+    --text:#f4f2fb;
+    --muted:#9c94b8;
+    --border:#2a2447;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Vazirmatn', sans-serif;
+    background: radial-gradient(120% 80% at 20% -10%, #241b47 0%, var(--bg) 55%), var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    padding:18px 14px 90px;
+    direction:rtl;
+  }
+  .wrap{max-width:520px;margin:0 auto;}
+
+  header{
+    text-align:center;
+    margin-bottom:20px;
+    position:relative;
+  }
+  header h1{
+    font-size:22px;
+    font-weight:800;
+    margin:0 0 4px;
+    background:linear-gradient(90deg, var(--violet2), var(--sky));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{margin:0;color:var(--muted);font-size:13px;}
+
+  .glow-blob{
+    position:absolute; top:-40px; left:50%; transform:translateX(-50%);
+    width:220px; height:220px; border-radius:50%;
+    background:radial-gradient(circle, rgba(139,92,246,0.35), transparent 70%);
+    filter:blur(10px);
+    z-index:-1;
+    animation:float 8s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{transform:translateX(-50%) translateY(0);}
+    50%{transform:translateX(-50%) translateY(10px);}
+  }
+
+  .hero-card{
+    background:linear-gradient(160deg, var(--card2), var(--card));
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:20px;
+    margin-bottom:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+  }
+  .hero-label{font-size:13px;color:var(--muted);margin-bottom:8px;display:block;}
+  .amount-row{display:flex;align-items:center;gap:10px;}
+  .amount-input{
+    flex:1;
+    background:var(--bg2);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:14px 12px;
+    font-size:22px;
+    font-weight:700;
+    color:var(--text);
+    font-family:'Vazirmatn', sans-serif;
+    text-align:center;
+    outline:none;
+  }
+  .amount-input:focus{border-color:var(--violet);}
+  .toman-tag{font-size:13px;color:var(--muted);white-space:nowrap;}
+
+  .split-btn{
+    width:100%;
+    margin-top:14px;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(90deg, var(--violet), #7c3aed);
+    color:#fff;
+    font-family:'Vazirmatn', sans-serif;
+    font-weight:800;
+    font-size:15px;
+    cursor:pointer;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 6px 20px rgba(139,92,246,0.4);
+    transition:transform .15s ease;
+  }
+  .split-btn:active{transform:scale(0.97);}
+  .split-btn.disabled{opacity:0.4; pointer-events:none;}
+
+  .section-title{
+    display:flex;align-items:center;justify-content:space-between;
+    margin:22px 0 12px;
+  }
+  .section-title h2{font-size:15px;margin:0;font-weight:700;color:var(--text);}
+  .pct-total{font-size:12px;color:var(--muted);}
+  .pct-total.bad{color:#f87171;}
+  .pct-total.good{color:var(--emerald);}
+
+  .cat-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:14px;
+    margin-bottom:10px;
+    position:relative;
+    overflow:hidden;
+  }
+  .cat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .cat-name{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14.5px;}
+  .cat-emoji{font-size:19px;}
+  .cat-pct{font-weight:800;font-size:15px;}
+  .cat-amt{font-size:12.5px;color:var(--muted);margin-top:2px;}
+
+  .pct-input-wrap{display:flex;align-items:center;gap:3px;}
+  .pct-input{
+    width:52px;
+    background:var(--bg2);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:5px 4px;
+    font-family:'Vazirmatn', sans-serif;
+    font-weight:800;
+    font-size:14px;
+    color:var(--text);
+    text-align:center;
+    outline:none;
+  }
+  .pct-input:focus{border-color:var(--violet);}
+  .pct-sign{font-size:13px;color:var(--muted);}
+
+  .liquid-track{
+    position:relative;
+    height:10px;
+    border-radius:6px;
+    background:var(--bg2);
+    overflow:hidden;
+    margin-top:6px;
+  }
+  .liquid-fill{
+    position:absolute; inset:0 auto 0 0;
+    height:100%;
+    border-radius:6px;
+    background-size:200% 100%;
+    animation:liquidmove 3.5s linear infinite;
+    transition:width .4s ease;
+  }
+  @keyframes liquidmove{
+    0%{background-position:0% 50%;}
+    100%{background-position:200% 50%;}
+  }
+
+  input[type=range]{
+    width:100%;
+    margin-top:10px;
+    -webkit-appearance:none;
+    height:4px;
+    border-radius:4px;
+    background:var(--border);
+    outline:none;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:18px;height:18px;border-radius:50%;
+    background:#fff;
+    border:3px solid var(--violet);
+    cursor:pointer;
+    margin-top:-1px;
+  }
+
+  .cat-actions{display:flex;justify-content:flex-end;margin-top:6px;}
+  .del-btn{
+    background:none;border:none;color:var(--muted);font-size:12px;
+    cursor:pointer;padding:4px 8px;
+  }
+  .del-btn:active{color:#f87171;}
+
+  .add-cat-btn{
+    width:100%;
+    padding:13px;
+    border-radius:16px;
+    border:1.5px dashed var(--border);
+    background:transparent;
+    color:var(--violet2);
+    font-family:'Vazirmatn', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    margin-top:6px;
+  }
+
+  .normalize-btn{
+    width:100%;
+    padding:11px;
+    border-radius:14px;
+    border:1px solid var(--border);
+    background:var(--card2);
+    color:var(--text);
+    font-family:'Vazirmatn', sans-serif;
+    font-weight:600;
+    font-size:13px;
+    cursor:pointer;
+    margin-top:8px;
+  }
+
+  .history-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:12px 14px;
+    margin-bottom:8px;
+  }
+  .history-top{display:flex;justify-content:space-between;font-size:13px;font-weight:700;}
+  .history-date{color:var(--muted);font-weight:400;font-size:12px;}
+  .history-breakdown{
+    display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;
+  }
+  .chip{
+    font-size:11px;background:var(--bg2);border-radius:20px;padding:4px 9px;color:var(--muted);
+  }
+  .empty-hint{color:var(--muted);font-size:13px;text-align:center;padding:20px 10px;}
+
+  .totals-card{
+    background:linear-gradient(160deg, var(--card2), var(--card));
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:16px;
+    margin-top:8px;
+  }
+  .totals-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:8px 0;
+    border-bottom:1px solid var(--border);
+    font-size:13.5px;
+  }
+  .totals-row:last-child{border-bottom:none;}
+
+  /* modal */
+  .overlay{
+    position:fixed;inset:0;background:rgba(5,3,15,0.7);
+    display:none;align-items:flex-end;justify-content:center;
+    z-index:50;
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    background:var(--card2);
+    border-radius:22px 22px 0 0;
+    padding:20px;
+    width:100%;max-width:520px;
+    border-top:1px solid var(--border);
+    animation:slideup .25s ease;
+  }
+  @keyframes slideup{from{transform:translateY(40px);opacity:0;} to{transform:translateY(0);opacity:1;}}
+  .modal h3{margin:0 0 14px;font-size:16px;}
+  .modal input, .modal select{
+    width:100%;
+    background:var(--bg2);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:12px;
+    color:var(--text);
+    font-family:'Vazirmatn', sans-serif;
+    font-size:14px;
+    margin-bottom:10px;
+    outline:none;
+  }
+  .modal-actions{display:flex;gap:8px;margin-top:6px;}
+  .modal-actions button{
+    flex:1;padding:12px;border-radius:12px;border:none;
+    font-family:'Vazirmatn', sans-serif;font-weight:700;font-size:14px;cursor:pointer;
+  }
+  .btn-cancel{background:var(--bg2);color:var(--muted);}
+  .btn-confirm{background:linear-gradient(90deg, var(--violet), #7c3aed);color:#fff;}
+
+  .tabs{
+    display:flex;gap:8px;margin-bottom:14px;
+    background:var(--card);border:1px solid var(--border);border-radius:14px;padding:4px;
+  }
+  .tab{
+    flex:1;text-align:center;padding:9px 4px;border-radius:11px;
+    font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;
+  }
+  .tab.active{background:linear-gradient(90deg, var(--violet), #7c3aed);color:#fff;}
+  .page{display:none;}
+  .page.active{display:block;}
+
+  .inst-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:14px;
+    margin-bottom:12px;
+  }
+  .inst-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+  .inst-name{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px;}
+  .inst-remaining{font-size:12px;color:var(--muted);}
+  .inst-nums{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px;}
+  .inst-nums b{color:var(--text);font-weight:700;}
+  .inst-actions{display:flex;gap:8px;margin-top:12px;}
+  .pay-btn{
+    flex:1;padding:10px;border-radius:12px;border:none;
+    background:linear-gradient(90deg, var(--emerald), #34d399);
+    color:#04160f;font-family:'Vazirmatn', sans-serif;font-weight:800;font-size:13px;cursor:pointer;
+  }
+  .inst-del-btn{
+    padding:10px 14px;border-radius:12px;border:1px solid var(--border);
+    background:transparent;color:var(--muted);font-size:12px;cursor:pointer;
+  }
+  .inst-done{
+    font-size:11px;background:linear-gradient(90deg, var(--emerald), #34d399);color:#04160f;
+    border-radius:20px;padding:3px 10px;font-weight:700;
+  }
+
+  .toast{
+    position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+    background:var(--emerald);color:#04160f;
+    padding:10px 18px;border-radius:30px;font-size:13px;font-weight:700;
+    box-shadow:0 8px 20px rgba(16,185,129,0.4);
+    opacity:0;pointer-events:none;transition:opacity .3s, transform .3s;
+    z-index:100;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="glow-blob"></div>
+    <h1>💧 تقسیم‌گر درآمد وستا</h1>
+    <p>درآمد امروزتو وارد کن، خودش طبق درصدهات تقسیمش می‌کنه</p>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="split">تقسیم درآمد</div>
+    <div class="tab" data-tab="history">تاریخچه</div>
+    <div class="tab" data-tab="totals">جمع کل</div>
+    <div class="tab" data-tab="installments">اقساط</div>
+  </div>
+
+  <!-- SPLIT PAGE -->
+  <div class="page active" id="page-split">
+    <div class="hero-card">
+      <span class="hero-label">💵 درآمد امروز (تومان)</span>
+      <div class="amount-row">
+        <input type="text" inputmode="numeric" id="amountInput" class="amount-input" placeholder="مثلا 2,000,000">
+      </div>
+      <button class="split-btn disabled" id="splitBtn">✅ ثبت و تقسیم کن</button>
+    </div>
+
+    <div class="section-title">
+      <h2>🎛️ دسته‌بندی‌ها و درصدها</h2>
+      <span class="pct-total" id="pctTotal">۱۰۰٪</span>
+    </div>
+
+    <div id="catList"></div>
+
+    <button class="add-cat-btn" id="addCatBtn">+ افزودن دسته‌بندی جدید</button>
+    <button class="normalize-btn" id="normalizeBtn">⚖️ درصدها رو خودکار برابر ۱۰۰٪ کن</button>
+  </div>
+
+  <!-- HISTORY PAGE -->
+  <div class="page" id="page-history">
+    <div class="section-title"><h2>📜 تاریخچه ثبت‌ها</h2></div>
+    <div id="historyList"></div>
+  </div>
+
+  <!-- TOTALS PAGE -->
+  <div class="page" id="page-totals">
+    <div class="section-title"><h2>📊 جمع کل هر دسته</h2></div>
+    <div class="totals-card" id="totalsList"></div>
+  </div>
+
+  <!-- INSTALLMENTS PAGE -->
+  <div class="page" id="page-installments">
+    <div class="section-title"><h2>🧾 اقساط و تارگت‌ها</h2></div>
+    <p style="color:var(--muted);font-size:12.5px;margin:-4px 0 14px;">این بخش کاملاً جدا از تقسیم درآمده. برای هر قسط یه تارگت (هدف کل) می‌ذاری و هر بار که پرداخت کردی، ثبتش می‌کنی.</p>
+    <div id="installmentList"></div>
+    <button class="add-cat-btn" id="addInstallmentBtn">+ افزودن قسط جدید</button>
+  </div>
+</div>
+
+<!-- Add category modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3>افزودن دسته‌بندی جدید</h3>
+    <input type="text" id="newCatEmoji" placeholder="ایموجی (اختیاری) مثلا 🎯" maxlength="4">
+    <input type="text" id="newCatName" placeholder="اسم دسته‌بندی">
+    <input type="number" id="newCatPct" placeholder="درصد (مثلا 10)" min="0" max="100">
+    <div class="modal-actions">
+      <button class="btn-cancel" id="cancelBtn">انصراف</button>
+      <button class="btn-confirm" id="confirmBtn">افزودن</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add installment modal -->
+<div class="overlay" id="installOverlay">
+  <div class="modal">
+    <h3>افزودن قسط جدید</h3>
+    <input type="text" id="newInstEmoji" placeholder="ایموجی (اختیاری) مثلا 🏠" maxlength="4">
+    <input type="text" id="newInstName" placeholder="اسم قسط (مثلا وام مغازه)">
+    <input type="text" inputmode="numeric" id="newInstTarget" placeholder="تارگت / مبلغ کل (تومان)">
+    <div class="modal-actions">
+      <button class="btn-cancel" id="instCancelBtn">انصراف</button>
+      <button class="btn-confirm" id="instConfirmBtn">افزودن</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pay installment modal -->
+<div class="overlay" id="payOverlay">
+  <div class="modal">
+    <h3 id="payModalTitle">ثبت پرداخت</h3>
+    <input type="text" inputmode="numeric" id="payAmountInput" placeholder="مبلغ پرداختی (تومان)">
+    <div class="modal-actions">
+      <button class="btn-cancel" id="payCancelBtn">انصراف</button>
+      <button class="btn-confirm" id="payConfirmBtn">ثبت پرداخت</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'vesta_money_split_v1';
+const LIQUID_COLORS = [
+  ['#8b5cf6','#a78bfa'], ['#10b981','#34d399'], ['#f59e0b','#fbbf24'],
+  ['#ec4899','#f472b6'], ['#38bdf8','#7dd3fc'], ['#f472b6','#f43f5e'],
+  ['#22d3ee','#0ea5e9'], ['#a3e635','#65a30d']
+];
+
+const defaultState = {
+  categories: [
+    {id:'car', emoji:'🚗', name:'هزینه ماشین', pct:20},
+    {id:'save', emoji:'💰', name:'پس‌انداز', pct:30},
+    {id:'invest', emoji:'📈', name:'سرمایه‌گذاری', pct:35},
+    {id:'fun', emoji:'🎉', name:'تفریح و خرید شخصی', pct:10},
+    {id:'charity', emoji:'❤️', name:'کمک به خیریه', pct:5},
+  ],
+  history: [],
+  totals: {},
+  installments: []
+};
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return JSON.parse(JSON.stringify(defaultState));
+    const parsed = JSON.parse(raw);
+    if(!parsed.categories || !parsed.history || !parsed.totals) return JSON.parse(JSON.stringify(defaultState));
+    if(!parsed.installments) parsed.installments = [];
+    return parsed;
+  }catch(e){
+    return JSON.parse(JSON.stringify(defaultState));
+  }
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+let state = loadState();
+
+function fmt(n){
+  n = Math.round(n);
+  return n.toLocaleString('en-US');
+}
+function toFa(n){
+  return n.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+}
+
+function colorFor(idx){
+  return LIQUID_COLORS[idx % LIQUID_COLORS.length];
+}
+
+function pctSum(){
+  return state.categories.reduce((s,c)=>s+Number(c.pct||0),0);
+}
+
+function renderCats(){
+  const list = document.getElementById('catList');
+  list.innerHTML = '';
+  state.categories.forEach((cat, idx) => {
+    const [c1,c2] = colorFor(idx);
+    const div = document.createElement('div');
+    div.className = 'cat-card';
+    const amountVal = document.getElementById('amountInput').value.replace(/,/g,'');
+    const amount = Number(amountVal) || 0;
+    const catAmount = amount * (cat.pct/100);
+    div.innerHTML = `
+      <div class="cat-top">
+        <div class="cat-name"><span class="cat-emoji">${cat.emoji||'📌'}</span><span>${cat.name}</span></div>
+        <div class="pct-input-wrap">
+          <input type="number" class="pct-input" min="0" max="100" value="${cat.pct}" data-id="${cat.id}" data-role="pct-number">
+          <span class="pct-sign">٪</span>
+        </div>
+      </div>
+      <div class="cat-amt">${amount>0 ? fmt(catAmount)+' تومان' : 'مبلغ رو وارد کن'}</div>
+      <div class="liquid-track">
+        <div class="liquid-fill" style="width:${cat.pct}%; background-image:linear-gradient(90deg, ${c1}, ${c2}, ${c1});"></div>
+      </div>
+      <input type="range" min="0" max="100" value="${cat.pct}" data-id="${cat.id}">
+      <div class="cat-actions">
+        <button class="del-btn" data-id="${cat.id}">🗑️ حذف این دسته</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+
+  const total = pctSum();
+  const totalEl = document.getElementById('pctTotal');
+  totalEl.textContent = toFa(total) + '٪';
+  totalEl.className = 'pct-total ' + (total === 100 ? 'good' : 'bad');
+
+  // slider events
+  list.querySelectorAll('input[type=range]').forEach(r => {
+    r.addEventListener('input', (e) => {
+      const id = e.target.dataset.id;
+      const cat = state.categories.find(c => c.id === id);
+      cat.pct = Number(e.target.value);
+      saveState();
+      renderCats();
+    });
+  });
+  // number input events (keyboard entry)
+  list.querySelectorAll('input[data-role=pct-number]').forEach(inp => {
+    inp.addEventListener('input', (e) => {
+      const id = e.target.dataset.id;
+      const cat = state.categories.find(c => c.id === id);
+      let v = e.target.value;
+      if(v === ''){ return; }
+      v = Math.max(0, Math.min(100, Number(v)));
+      cat.pct = v;
+      saveState();
+      // update slider + amounts live without losing focus on the number field
+      const card = e.target.closest('.cat-card');
+      const range = card.querySelector('input[type=range]');
+      const fill = card.querySelector('.liquid-fill');
+      const amtEl = card.querySelector('.cat-amt');
+      range.value = v;
+      fill.style.width = v + '%';
+      const amountVal = document.getElementById('amountInput').value.replace(/,/g,'');
+      const amount = Number(amountVal) || 0;
+      amtEl.textContent = amount > 0 ? fmt(amount*(v/100)) + ' تومان' : 'مبلغ رو وارد کن';
+      const total = pctSum();
+      const totalEl = document.getElementById('pctTotal');
+      totalEl.textContent = toFa(total) + '٪';
+      totalEl.className = 'pct-total ' + (total === 100 ? 'good' : 'bad');
+      updateSplitBtn();
+    });
+    inp.addEventListener('blur', (e) => {
+      // snap empty back to 0 and do a full re-render to stay in sync
+      const id = e.target.dataset.id;
+      const cat = state.categories.find(c => c.id === id);
+      if(e.target.value === '') cat.pct = 0;
+      saveState();
+      renderCats();
+    });
+  });
+  // delete events
+  list.querySelectorAll('.del-btn').forEach(b => {
+    b.addEventListener('click', (e) => {
+      const id = e.target.dataset.id;
+      if(state.categories.length <= 1){ showToast('حداقل یک دسته باید بمونه'); return; }
+      state.categories = state.categories.filter(c => c.id !== id);
+      saveState();
+      renderCats();
+    });
+  });
+
+  updateSplitBtn();
+}
+
+function updateSplitBtn(){
+  const amountVal = document.getElementById('amountInput').value.replace(/,/g,'');
+  const amount = Number(amountVal) || 0;
+  const btn = document.getElementById('splitBtn');
+  if(amount > 0 && pctSum() === 100){
+    btn.classList.remove('disabled');
+  } else {
+    btn.classList.add('disabled');
+  }
+}
+
+// amount input formatting
+const amountInput = document.getElementById('amountInput');
+amountInput.addEventListener('input', (e) => {
+  let v = e.target.value.replace(/[^\d]/g,'');
+  if(v){
+    e.target.value = Number(v).toLocaleString('en-US');
+  } else {
+    e.target.value = '';
+  }
+  renderCats();
+});
+
+document.getElementById('splitBtn').addEventListener('click', () => {
+  const amountVal = amountInput.value.replace(/,/g,'');
+  const amount = Number(amountVal);
+  if(!amount || pctSum() !== 100) return;
+
+  const breakdown = state.categories.map(c => ({
+    id:c.id, name:c.name, emoji:c.emoji, pct:c.pct, amount: amount*(c.pct/100)
+  }));
+
+  const entry = {
+    date: new Date().toISOString(),
+    amount: amount,
+    breakdown: breakdown
+  };
+  state.history.unshift(entry);
+
+  breakdown.forEach(b => {
+    state.totals[b.id] = (state.totals[b.id]||0) + b.amount;
+  });
+
+  saveState();
+  amountInput.value = '';
+  renderCats();
+  renderHistory();
+  renderTotals();
+  showToast('✅ درآمد امروز تقسیم و ثبت شد');
+});
+
+document.getElementById('normalizeBtn').addEventListener('click', () => {
+  const n = state.categories.length;
+  if(n === 0) return;
+  const base = Math.floor(100/n);
+  let remainder = 100 - base*n;
+  state.categories.forEach((c,i) => {
+    c.pct = base + (i < remainder ? 1 : 0);
+  });
+  saveState();
+  renderCats();
+});
+
+// add category modal
+const overlay = document.getElementById('overlay');
+document.getElementById('addCatBtn').addEventListener('click', () => {
+  document.getElementById('newCatEmoji').value = '';
+  document.getElementById('newCatName').value = '';
+  document.getElementById('newCatPct').value = '';
+  overlay.classList.add('show');
+});
+document.getElementById('cancelBtn').addEventListener('click', () => overlay.classList.remove('show'));
+overlay.addEventListener('click', (e) => { if(e.target === overlay) overlay.classList.remove('show'); });
+
+document.getElementById('confirmBtn').addEventListener('click', () => {
+  const emoji = document.getElementById('newCatEmoji').value.trim() || '📌';
+  const name = document.getElementById('newCatName').value.trim();
+  const pct = Number(document.getElementById('newCatPct').value);
+  if(!name){ showToast('اسم دسته رو وارد کن'); return; }
+  if(!pct || pct < 0 || pct > 100){ showToast('درصد معتبر وارد کن'); return; }
+  const id = 'c_' + Date.now();
+  state.categories.push({id, emoji, name, pct});
+  saveState();
+  overlay.classList.remove('show');
+  renderCats();
+});
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function renderHistory(){
+  const list = document.getElementById('historyList');
+  if(state.history.length === 0){
+    list.innerHTML = '<div class="empty-hint">هنوز چیزی ثبت نشده. از تب «تقسیم درآمد» شروع کن.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  state.history.forEach(entry => {
+    const d = new Date(entry.date);
+    const dateStr = d.toLocaleDateString('fa-IR') + ' - ' + d.toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
+    const div = document.createElement('div');
+    div.className = 'history-card';
+    div.innerHTML = `
+      <div class="history-top">
+        <span>${fmt(entry.amount)} تومان</span>
+        <span class="history-date">${dateStr}</span>
+      </div>
+      <div class="history-breakdown">
+        ${entry.breakdown.map(b => `<span class="chip">${b.emoji} ${b.name}: ${fmt(b.amount)}</span>`).join('')}
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function renderTotals(){
+  const box = document.getElementById('totalsList');
+  const cats = state.categories;
+  if(Object.keys(state.totals).length === 0){
+    box.innerHTML = '<div class="empty-hint">هنوز چیزی ثبت نشده.</div>';
+    return;
+  }
+  let grand = 0;
+  let rows = '';
+  // show totals for existing categories + any orphaned ones
+  const seen = new Set();
+  cats.forEach(c => {
+    const val = state.totals[c.id] || 0;
+    grand += val;
+    seen.add(c.id);
+    rows += `<div class="totals-row"><span>${c.emoji} ${c.name}</span><span>${fmt(val)} تومان</span></div>`;
+  });
+  Object.keys(state.totals).forEach(id => {
+    if(!seen.has(id)){
+      grand += state.totals[id];
+      rows += `<div class="totals-row"><span>📦 دسته حذف‌شده</span><span>${fmt(state.totals[id])} تومان</span></div>`;
+    }
+  });
+  rows += `<div class="totals-row" style="font-weight:800;border-top:2px solid var(--border);margin-top:6px;padding-top:12px;"><span>💎 جمع کل</span><span>${fmt(grand)} تومان</span></div>`;
+  box.innerHTML = rows;
+}
+
+// ===== INSTALLMENTS =====
+function renderInstallments(){
+  const list = document.getElementById('installmentList');
+  if(state.installments.length === 0){
+    list.innerHTML = '<div class="empty-hint">هنوز قسطی اضافه نکردی. از دکمه پایین شروع کن.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  state.installments.forEach((inst, idx) => {
+    const [c1,c2] = colorFor(idx+3);
+    const paid = inst.paid || 0;
+    const target = inst.target || 0;
+    const remaining = Math.max(0, target - paid);
+    const pct = target > 0 ? Math.min(100, (paid/target)*100) : 0;
+    const isDone = target > 0 && paid >= target;
+    const div = document.createElement('div');
+    div.className = 'inst-card';
+    div.innerHTML = `
+      <div class="inst-top">
+        <div class="inst-name"><span class="cat-emoji">${inst.emoji||'🧾'}</span><span>${inst.name}</span></div>
+        ${isDone ? '<span class="inst-done">تکمیل ✅</span>' : ''}
+      </div>
+      <div class="liquid-track">
+        <div class="liquid-fill" style="width:${pct}%; background-image:linear-gradient(90deg, ${c1}, ${c2}, ${c1});"></div>
+      </div>
+      <div class="inst-nums">
+        <span>پرداخت‌شده: <b>${fmt(paid)}</b></span>
+        <span>تارگت: <b>${fmt(target)}</b></span>
+      </div>
+      <div class="inst-remaining">مونده: ${fmt(remaining)} تومان</div>
+      <div class="inst-actions">
+        <button class="pay-btn" data-id="${inst.id}">➕ ثبت پرداخت</button>
+        <button class="inst-del-btn" data-id="${inst.id}">🗑️</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+
+  list.querySelectorAll('.pay-btn').forEach(b => {
+    b.addEventListener('click', (e) => {
+      currentPayInstId = e.target.dataset.id;
+      const inst = state.installments.find(i => i.id === currentPayInstId);
+      document.getElementById('payModalTitle').textContent = 'ثبت پرداخت - ' + inst.name;
+      document.getElementById('payAmountInput').value = '';
+      payOverlay.classList.add('show');
+    });
+  });
+  list.querySelectorAll('.inst-del-btn').forEach(b => {
+    b.addEventListener('click', (e) => {
+      const id = e.target.dataset.id;
+      state.installments = state.installments.filter(i => i.id !== id);
+      saveState();
+      renderInstallments();
+    });
+  });
+}
+
+const installOverlay = document.getElementById('installOverlay');
+document.getElementById('addInstallmentBtn').addEventListener('click', () => {
+  document.getElementById('newInstEmoji').value = '';
+  document.getElementById('newInstName').value = '';
+  document.getElementById('newInstTarget').value = '';
+  installOverlay.classList.add('show');
+});
+document.getElementById('instCancelBtn').addEventListener('click', () => installOverlay.classList.remove('show'));
+installOverlay.addEventListener('click', (e) => { if(e.target === installOverlay) installOverlay.classList.remove('show'); });
+
+document.getElementById('newInstTarget').addEventListener('input', (e) => {
+  let v = e.target.value.replace(/[^\d]/g,'');
+  e.target.value = v ? Number(v).toLocaleString('en-US') : '';
+});
+
+document.getElementById('instConfirmBtn').addEventListener('click', () => {
+  const emoji = document.getElementById('newInstEmoji').value.trim() || '🧾';
+  const name = document.getElementById('newInstName').value.trim();
+  const target = Number(document.getElementById('newInstTarget').value.replace(/,/g,''));
+  if(!name){ showToast('اسم قسط رو وارد کن'); return; }
+  if(!target || target <= 0){ showToast('تارگت معتبر وارد کن'); return; }
+  const id = 'i_' + Date.now();
+  state.installments.push({id, emoji, name, target, paid:0, payments:[]});
+  saveState();
+  installOverlay.classList.remove('show');
+  renderInstallments();
+  showToast('قسط اضافه شد');
+});
+
+let currentPayInstId = null;
+const payOverlay = document.getElementById('payOverlay');
+document.getElementById('payCancelBtn').addEventListener('click', () => payOverlay.classList.remove('show'));
+payOverlay.addEventListener('click', (e) => { if(e.target === payOverlay) payOverlay.classList.remove('show'); });
+
+document.getElementById('payAmountInput').addEventListener('input', (e) => {
+  let v = e.target.value.replace(/[^\d]/g,'');
+  e.target.value = v ? Number(v).toLocaleString('en-US') : '';
+});
+
+document.getElementById('payConfirmBtn').addEventListener('click', () => {
+  const amount = Number(document.getElementById('payAmountInput').value.replace(/,/g,''));
+  if(!amount || amount <= 0){ showToast('مبلغ معتبر وارد کن'); return; }
+  const inst = state.installments.find(i => i.id === currentPayInstId);
+  if(!inst) return;
+  inst.paid = (inst.paid || 0) + amount;
+  inst.payments.push({date: new Date().toISOString(), amount});
+  saveState();
+  payOverlay.classList.remove('show');
+  renderInstallments();
+  showToast('✅ پرداخت ثبت شد');
+});
+
+// tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('page-' + tab.dataset.tab).classList.add('active');
+    if(tab.dataset.tab === 'history') renderHistory();
+    if(tab.dataset.tab === 'totals') renderTotals();
+    if(tab.dataset.tab === 'installments') renderInstallments();
+  });
+});
+
+renderCats();
+renderHistory();
+renderTotals();
+renderInstallments();
+</script>
+</body>
+</html>
