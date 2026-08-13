@@ -56,6 +56,36 @@
   }
   header p{margin:0;color:var(--muted);font-size:13px;}
 
+  .date-pill{
+    position:absolute; top:-4px; right:0;
+    display:flex;align-items:center;gap:5px;
+    background:var(--card2);
+    border:1px solid var(--border);
+    border-radius:30px;
+    padding:7px 12px;
+    font-size:12px;
+    font-weight:600;
+    color:var(--text);
+    z-index:2;
+  }
+  .date-pill .cal-emoji{font-size:13px;}
+  .date-pill input[type=date]{
+    position:absolute; inset:0; opacity:0; width:100%; height:100%;
+    border:0; padding:0; margin:0; cursor:pointer;
+    -webkit-appearance:none;
+  }
+
+  .existing-hint{
+    margin-top:10px;
+    font-size:11.5px;
+    color:var(--amber);
+    background:rgba(245,158,11,0.1);
+    border:1px solid rgba(245,158,11,0.3);
+    border-radius:10px;
+    padding:8px 10px;
+    line-height:1.6;
+  }
+
   .glow-blob{
     position:absolute; top:-40px; left:50%; transform:translateX(-50%);
     width:220px; height:220px; border-radius:50%;
@@ -195,12 +225,26 @@
     margin-top:-1px;
   }
 
-  .cat-actions{display:flex;justify-content:flex-end;margin-top:6px;}
-  .del-btn{
-    background:none;border:none;color:var(--muted);font-size:12px;
-    cursor:pointer;padding:4px 8px;
+  .cat-actions{display:flex;align-items:center;gap:8px;margin-top:10px;}
+  .note-input{
+    flex:1;
+    background:var(--bg2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:8px 10px;
+    font-size:12.5px;
+    color:var(--text);
+    font-family:'Vazirmatn', sans-serif;
+    outline:none;
   }
-  .del-btn:active{color:#f87171;}
+  .note-input::placeholder{color:var(--muted);}
+  .note-input:focus{border-color:var(--violet);}
+  .del-btn{
+    flex-shrink:0;
+    background:var(--bg2);border:1px solid var(--border);color:var(--muted);font-size:14px;
+    cursor:pointer;padding:8px 10px;border-radius:10px;
+  }
+  .del-btn:active{color:#f87171;border-color:#f87171;}
 
   .add-cat-btn{
     width:100%;
@@ -245,6 +289,13 @@
   .chip{
     font-size:11px;background:var(--bg2);border-radius:20px;padding:4px 9px;color:var(--muted);
   }
+  .history-actions{display:flex;gap:8px;margin-top:10px;}
+  .hist-edit-btn, .hist-del-btn{
+    flex:1;padding:9px;border-radius:10px;border:1px solid var(--border);
+    background:var(--bg2);color:var(--text);font-family:'Vazirmatn', sans-serif;
+    font-size:12px;font-weight:600;cursor:pointer;
+  }
+  .hist-del-btn{color:#f87171;}
   .empty-hint{color:var(--muted);font-size:13px;text-align:center;padding:20px 10px;}
 
   .totals-card{
@@ -353,8 +404,12 @@
 <div class="wrap">
   <header>
     <div class="glow-blob"></div>
+    <div class="date-pill" id="datePillWrap">
+      <span class="cal-emoji">📅</span><span id="datePillLabel">امروز</span>
+      <input type="date" id="dateInput">
+    </div>
     <h1>💧 تقسیم‌گر درآمد وستا</h1>
-    <p>درآمد امروزتو وارد کن، خودش طبق درصدهات تقسیمش می‌کنه</p>
+    <p>درآمد روزتو وارد کن، خودش طبق درصدهات تقسیمش می‌کنه</p>
   </header>
 
   <div class="tabs">
@@ -371,6 +426,7 @@
       <div class="amount-row">
         <input type="text" inputmode="numeric" id="amountInput" class="amount-input" placeholder="مثلا 2,000,000">
       </div>
+      <div class="existing-hint" id="existingHint" style="display:none;"></div>
       <button class="split-btn disabled" id="splitBtn">✅ ثبت و تقسیم کن</button>
     </div>
 
@@ -446,6 +502,18 @@
   </div>
 </div>
 
+<!-- Edit day amount modal -->
+<div class="overlay" id="editOverlay">
+  <div class="modal">
+    <h3 id="editAmountTitle">ویرایش مبلغ</h3>
+    <input type="text" inputmode="numeric" id="editAmountInput" placeholder="مبلغ جدید (تومان)">
+    <div class="modal-actions">
+      <button class="btn-cancel" id="editCancelBtn">انصراف</button>
+      <button class="btn-confirm" id="editConfirmBtn">ذخیره</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -464,18 +532,42 @@ const defaultState = {
     {id:'fun', emoji:'🎉', name:'تفریح و خرید شخصی', pct:10},
     {id:'charity', emoji:'❤️', name:'کمک به خیریه', pct:5},
   ],
-  history: [],
-  totals: {},
+  days: {},
   installments: []
 };
+
+function todayKey(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
 
 function loadState(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
     if(!raw) return JSON.parse(JSON.stringify(defaultState));
     const parsed = JSON.parse(raw);
-    if(!parsed.categories || !parsed.history || !parsed.totals) return JSON.parse(JSON.stringify(defaultState));
+    if(!parsed.categories) return JSON.parse(JSON.stringify(defaultState));
     if(!parsed.installments) parsed.installments = [];
+
+    // migrate old flat history+totals format into date-grouped "days"
+    if(!parsed.days){
+      parsed.days = {};
+      if(Array.isArray(parsed.history)){
+        parsed.history.forEach(entry => {
+          const dateKey = (entry.date || '').slice(0,10) || todayKey();
+          if(!parsed.days[dateKey]) parsed.days[dateKey] = {amount:0, breakdown:[]};
+          const day = parsed.days[dateKey];
+          day.amount += entry.amount;
+          (entry.breakdown||[]).forEach(b => {
+            const existing = day.breakdown.find(x => x.id === b.id);
+            if(existing){ existing.amount += b.amount; }
+            else { day.breakdown.push({id:b.id, name:b.name, emoji:b.emoji, pct:b.pct, amount:b.amount}); }
+          });
+        });
+      }
+      delete parsed.history;
+      delete parsed.totals;
+    }
     return parsed;
   }catch(e){
     return JSON.parse(JSON.stringify(defaultState));
@@ -527,7 +619,8 @@ function renderCats(){
       </div>
       <input type="range" min="0" max="100" value="${cat.pct}" data-id="${cat.id}">
       <div class="cat-actions">
-        <button class="del-btn" data-id="${cat.id}">🗑️ حذف این دسته</button>
+        <input type="text" class="note-input" placeholder="✏️ یادداشت کوتاه..." value="${cat.note||''}" data-id="${cat.id}" data-role="note">
+        <button class="del-btn" data-id="${cat.id}" title="حذف این دسته">🗑️</button>
       </div>
     `;
     list.appendChild(div);
@@ -583,6 +676,15 @@ function renderCats(){
       renderCats();
     });
   });
+  // note events
+  list.querySelectorAll('input[data-role=note]').forEach(inp => {
+    inp.addEventListener('input', (e) => {
+      const id = e.target.dataset.id;
+      const cat = state.categories.find(c => c.id === id);
+      cat.note = e.target.value;
+      saveState();
+    });
+  });
   // delete events
   list.querySelectorAll('.del-btn').forEach(b => {
     b.addEventListener('click', (e) => {
@@ -629,15 +731,13 @@ document.getElementById('splitBtn').addEventListener('click', () => {
     id:c.id, name:c.name, emoji:c.emoji, pct:c.pct, amount: amount*(c.pct/100)
   }));
 
-  const entry = {
-    date: new Date().toISOString(),
-    amount: amount,
-    breakdown: breakdown
-  };
-  state.history.unshift(entry);
-
+  if(!state.days[selectedDate]) state.days[selectedDate] = {amount:0, breakdown:[]};
+  const day = state.days[selectedDate];
+  day.amount += amount;
   breakdown.forEach(b => {
-    state.totals[b.id] = (state.totals[b.id]||0) + b.amount;
+    const existing = day.breakdown.find(x => x.id === b.id);
+    if(existing){ existing.amount += b.amount; }
+    else { day.breakdown.push(Object.assign({}, b)); }
   });
 
   saveState();
@@ -645,7 +745,45 @@ document.getElementById('splitBtn').addEventListener('click', () => {
   renderCats();
   renderHistory();
   renderTotals();
-  showToast('✅ درآمد امروز تقسیم و ثبت شد');
+  updateExistingHint();
+  showToast('✅ ثبت شد و برای ' + formatDateLabel(selectedDate) + ' تقسیم شد');
+});
+
+// ===== DATE PICKER =====
+const dateInput = document.getElementById('dateInput');
+const datePillLabel = document.getElementById('datePillLabel');
+let selectedDate = todayKey();
+
+function formatDateLabel(dateKey){
+  const d = new Date(dateKey + 'T00:00:00');
+  const label = d.toLocaleDateString('fa-IR', {day:'numeric', month:'long', year:'numeric'});
+  return dateKey === todayKey() ? ('امروز - ' + label) : label;
+}
+function updateDatePillLabel(){
+  if(selectedDate === todayKey()){
+    datePillLabel.textContent = 'امروز';
+  } else {
+    const d = new Date(selectedDate + 'T00:00:00');
+    datePillLabel.textContent = d.toLocaleDateString('fa-IR', {day:'numeric', month:'short'});
+  }
+}
+function updateExistingHint(){
+  const hint = document.getElementById('existingHint');
+  const day = state.days[selectedDate];
+  if(day){
+    hint.style.display = 'block';
+    hint.textContent = 'ℹ️ برای این تاریخ قبلاً ' + fmt(day.amount) + ' تومان ثبت شده. مبلغ جدید بهش اضافه می‌شه.';
+  } else {
+    hint.style.display = 'none';
+  }
+}
+dateInput.value = selectedDate;
+updateDatePillLabel();
+updateExistingHint();
+dateInput.addEventListener('change', (e) => {
+  selectedDate = e.target.value || todayKey();
+  updateDatePillLabel();
+  updateExistingHint();
 });
 
 document.getElementById('normalizeBtn').addEventListener('click', () => {
@@ -693,50 +831,103 @@ function showToast(msg){
 
 function renderHistory(){
   const list = document.getElementById('historyList');
-  if(state.history.length === 0){
+  const dateKeys = Object.keys(state.days).sort((a,b) => b.localeCompare(a));
+  if(dateKeys.length === 0){
     list.innerHTML = '<div class="empty-hint">هنوز چیزی ثبت نشده. از تب «تقسیم درآمد» شروع کن.</div>';
     return;
   }
   list.innerHTML = '';
-  state.history.forEach(entry => {
-    const d = new Date(entry.date);
-    const dateStr = d.toLocaleDateString('fa-IR') + ' - ' + d.toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
+  dateKeys.forEach(dateKey => {
+    const day = state.days[dateKey];
     const div = document.createElement('div');
     div.className = 'history-card';
     div.innerHTML = `
       <div class="history-top">
-        <span>${fmt(entry.amount)} تومان</span>
-        <span class="history-date">${dateStr}</span>
+        <span>${fmt(day.amount)} تومان</span>
+        <span class="history-date">${formatDateLabel(dateKey)}</span>
       </div>
       <div class="history-breakdown">
-        ${entry.breakdown.map(b => `<span class="chip">${b.emoji} ${b.name}: ${fmt(b.amount)}</span>`).join('')}
+        ${day.breakdown.map(b => `<span class="chip">${b.emoji} ${b.name}: ${fmt(b.amount)}</span>`).join('')}
+      </div>
+      <div class="history-actions">
+        <button class="hist-edit-btn" data-date="${dateKey}">✏️ ویرایش مبلغ</button>
+        <button class="hist-del-btn" data-date="${dateKey}">🗑️ حذف</button>
       </div>
     `;
     list.appendChild(div);
   });
+
+  list.querySelectorAll('.hist-edit-btn').forEach(b => {
+    b.addEventListener('click', (e) => {
+      currentEditDate = e.target.dataset.date;
+      const day = state.days[currentEditDate];
+      document.getElementById('editAmountTitle').textContent = 'ویرایش مبلغ - ' + formatDateLabel(currentEditDate);
+      document.getElementById('editAmountInput').value = fmt(day.amount);
+      editOverlay.classList.add('show');
+    });
+  });
+  list.querySelectorAll('.hist-del-btn').forEach(b => {
+    b.addEventListener('click', (e) => {
+      const dateKey = e.target.dataset.date;
+      delete state.days[dateKey];
+      saveState();
+      renderHistory();
+      renderTotals();
+      updateExistingHint();
+      showToast('🗑️ حذف شد');
+    });
+  });
 }
+
+let currentEditDate = null;
+const editOverlay = document.getElementById('editOverlay');
+document.getElementById('editCancelBtn').addEventListener('click', () => editOverlay.classList.remove('show'));
+editOverlay.addEventListener('click', (e) => { if(e.target === editOverlay) editOverlay.classList.remove('show'); });
+document.getElementById('editAmountInput').addEventListener('input', (e) => {
+  let v = e.target.value.replace(/[^\d]/g,'');
+  e.target.value = v ? Number(v).toLocaleString('en-US') : '';
+});
+document.getElementById('editConfirmBtn').addEventListener('click', () => {
+  const amount = Number(document.getElementById('editAmountInput').value.replace(/,/g,''));
+  if(!amount || amount <= 0){ showToast('مبلغ معتبر وارد کن'); return; }
+  const breakdown = state.categories.map(c => ({
+    id:c.id, name:c.name, emoji:c.emoji, pct:c.pct, amount: amount*(c.pct/100)
+  }));
+  state.days[currentEditDate] = {amount, breakdown};
+  saveState();
+  editOverlay.classList.remove('show');
+  renderHistory();
+  renderTotals();
+  updateExistingHint();
+  showToast('✅ مبلغ ویرایش شد');
+});
 
 function renderTotals(){
   const box = document.getElementById('totalsList');
-  const cats = state.categories;
-  if(Object.keys(state.totals).length === 0){
+  const dateKeys = Object.keys(state.days);
+  if(dateKeys.length === 0){
     box.innerHTML = '<div class="empty-hint">هنوز چیزی ثبت نشده.</div>';
     return;
   }
+  const sums = {};
+  dateKeys.forEach(dk => {
+    state.days[dk].breakdown.forEach(b => {
+      sums[b.id] = (sums[b.id]||0) + b.amount;
+    });
+  });
   let grand = 0;
   let rows = '';
-  // show totals for existing categories + any orphaned ones
   const seen = new Set();
-  cats.forEach(c => {
-    const val = state.totals[c.id] || 0;
+  state.categories.forEach(c => {
+    const val = sums[c.id] || 0;
     grand += val;
     seen.add(c.id);
     rows += `<div class="totals-row"><span>${c.emoji} ${c.name}</span><span>${fmt(val)} تومان</span></div>`;
   });
-  Object.keys(state.totals).forEach(id => {
+  Object.keys(sums).forEach(id => {
     if(!seen.has(id)){
-      grand += state.totals[id];
-      rows += `<div class="totals-row"><span>📦 دسته حذف‌شده</span><span>${fmt(state.totals[id])} تومان</span></div>`;
+      grand += sums[id];
+      rows += `<div class="totals-row"><span>📦 دسته حذف‌شده</span><span>${fmt(sums[id])} تومان</span></div>`;
     }
   });
   rows += `<div class="totals-row" style="font-weight:800;border-top:2px solid var(--border);margin-top:6px;padding-top:12px;"><span>💎 جمع کل</span><span>${fmt(grand)} تومان</span></div>`;
